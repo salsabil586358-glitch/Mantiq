@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منطقي الرياضي</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F0EEFF;--surface:#fff;--primary:#7C3AED;--pl:#EDE9FE;
+  --sec:#0EA5E9;--secl:#E0F2FE;--acc:#EC4899;--accl:#FCE7F3;
+  --gold:#F59E0B;--goldl:#FEF3C7;--text:#1E1B4B;--ts:#64748B;
+  --border:#E2E8F0;--ok:#059669;--okl:#D1FAE5;--err:#DC2626;--errl:#FEE2E2;
+  --sh:0 4px 24px rgba(124,58,237,.12);--r:16px;
+}
+[data-theme="dark"]{
+  --bg:#130F2A;--surface:#1E1B4B;--primary:#A78BFA;--pl:#2D2B6B;
+  --sec:#38BDF8;--secl:#1E3A52;--acc:#F9A8D4;--accl:#4A1A3A;
+  --gold:#FCD34D;--goldl:#3A2E00;--text:#EEF2FF;--ts:#94A3B8;
+  --border:#312E81;--ok:#34D399;--okl:#064E3B;--err:#F87171;--errl:#450A0A;
+  --sh:0 4px 24px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;line-height:1.6}
+.hidden{display:none!important}
+/* NAV */
+nav{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;background:var(--surface);border-bottom:1px solid var(--border);box-shadow:var(--sh);position:sticky;top:0;z-index:100;transition:background .3s}
+.nav-logo{font-size:1.15rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.btn-theme{background:var(--pl);border:none;border-radius:50px;padding:8px 18px;cursor:pointer;font-size:.88rem;color:var(--primary);font-family:inherit;font-weight:700;transition:.2s}
+.btn-theme:hover{background:var(--primary);color:#fff}
+/* HOME */
+#home{max-width:940px;margin:0 auto;padding:28px 16px}
+.hero{text-align:center;padding:36px 0 24px}
+.hero h1{font-size:clamp(1.7rem,4vw,2.5rem);font-weight:800;background:linear-gradient(135deg,var(--primary),var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px}
+.hero p{color:var(--ts);max-width:520px;margin:0 auto;font-size:.93rem}
+.stats-bar{display:flex;justify-content:space-around;background:var(--surface);border-radius:var(--r);padding:16px;margin-bottom:24px;box-shadow:var(--sh)}
+.stat{text-align:center}
+.stat-num{font-size:1.5rem;font-weight:800;color:var(--primary)}
+.stat-label{font-size:.72rem;color:var(--ts)}
+.levels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.level-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);padding:22px;cursor:pointer;transition:.25s;position:relative;overflow:hidden}
+.level-card:not(.locked):hover{transform:translateY(-4px);box-shadow:var(--sh);border-color:var(--primary)}
+.level-card.locked{opacity:.5;cursor:not-allowed}
+.lbadge{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:12px;font-size:1.4rem;margin-bottom:10px}
+.b1{background:var(--secl);} .b2{background:var(--pl);} .b3{background:var(--accl);} .b4{background:var(--goldl);} .b5{background:#D1FAE5;}
+.level-title{font-size:.97rem;font-weight:700;margin-bottom:4px}
+.level-desc{font-size:.8rem;color:var(--ts);margin-bottom:14px}
+.lbar{background:var(--pl);border-radius:4px;height:7px;overflow:hidden}
+.lbar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--primary),var(--acc));transition:width .6s}
+.lstats{display:flex;justify-content:space-between;margin-top:8px;font-size:.76rem;color:var(--ts)}
+.lock-msg{font-size:.78rem;color:var(--ts);margin-top:6px}
+.weak-hint{font-size:.75rem;margin-top:6px;padding:3px 10px;border-radius:6px;background:var(--errl);color:var(--err);display:inline-block}
+/* EXERCISE */
+#exercise{max-width:720px;margin:0 auto;padding:24px 16px}
+.ex-top{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.btn-back{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:7px 14px;cursor:pointer;color:var(--text);font-family:inherit;font-size:.88rem;white-space:nowrap;transition:.2s}
+.btn-back:hover{border-color:var(--primary);color:var(--primary)}
+.ex-bar-wrap{flex:1}
+.ex-bar{background:var(--pl);height:8px;border-radius:4px;overflow:hidden}
+.ex-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--primary),var(--acc));transition:width .4s}
+.ex-count{font-size:.78rem;color:var(--ts);margin-top:4px;text-align:center}
+.adapt-badge{display:inline-block;background:var(--goldl);color:#92400E;font-size:.73rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+[data-theme="dark"] .adapt-badge{color:var(--gold)}
+.ex-card{background:var(--surface);border-radius:var(--r);padding:26px;box-shadow:var(--sh)}
+.dchip{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.76rem;font-weight:700;margin-bottom:14px}
+.dc-اقتصاد{background:var(--secl);color:var(--sec)}
+.dc-ميكانيك{background:var(--goldl);color:#92400E}
+.dc-كهرباء{background:var(--accl);color:var(--acc)}
+.dc-رياضيات{background:var(--pl);color:var(--primary)}
+.dc-يومية{background:#FEF3C7;color:#92400E}
+[data-theme="dark"] .dc-يومية{color:#FCD34D;background:#3A2E00}
+.dc-منطق{background:#F3E8FF;color:#7C3AED}
+[data-theme="dark"] .dc-منطق{color:#A78BFA;background:#2D1B69}
+[data-theme="dark"] .dc-ميكانيك{color:var(--gold)}
+[data-theme="dark"] .dc-كيمياء{color:#34D399}
+.sbox{background:var(--goldl);border-right:4px solid var(--gold);border-radius:10px;padding:14px 16px;margin-bottom:18px;font-size:.93rem;line-height:1.75}
+.slabel{font-size:.7rem;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.question{font-size:1rem;font-weight:700;margin-bottom:18px;line-height:1.5}
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:13px 16px;text-align:right;cursor:pointer;font-family:inherit;font-size:.9rem;color:var(--text);transition:.18s;line-height:1.45}
+.opt:hover:not(:disabled){border-color:var(--primary);background:var(--pl)}
+.opt.correct{border-color:var(--ok)!important;background:var(--okl)!important;color:var(--ok)!important;font-weight:700}
+.opt.wrong{border-color:var(--err)!important;background:var(--errl)!important;color:var(--err)!important;font-weight:700}
+.opt:disabled{cursor:default}
+.num-wrap{display:flex;flex-direction:column;gap:10px}
+.num-row{display:flex;gap:10px;align-items:center}
+.num-input{flex:1;padding:13px;border:2px solid var(--border);border-radius:12px;font-family:inherit;font-size:1.1rem;background:var(--bg);color:var(--text);text-align:center;transition:.2s;direction:ltr}
+.num-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--pl)}
+.num-input.correct{border-color:var(--ok);background:var(--okl)}
+.num-input.wrong{border-color:var(--err);background:var(--errl)}
+.unit{color:var(--ts);font-size:.88rem;white-space:nowrap;min-width:44px}
+.btn-check{width:100%;background:linear-gradient(135deg,var(--primary),var(--acc));color:#fff;border:none;border-radius:12px;padding:13px;cursor:pointer;font-family:inherit;font-size:.93rem;font-weight:700;transition:.2s}
+.btn-check:hover:not(:disabled){opacity:.88;transform:scale(1.01)}
+.btn-check:disabled{opacity:.5;cursor:not-allowed}
+.hint-area{margin-top:8px}
+.btn-hint{background:none;border:1px dashed var(--gold);color:var(--gold);border-radius:8px;padding:5px 14px;cursor:pointer;font-family:inherit;font-size:.8rem;transition:.2s}
+.btn-hint:hover{background:var(--goldl)}
+.hint-text{display:none;margin-top:8px;padding:10px 14px;background:var(--goldl);border-radius:10px;font-size:.86rem;line-height:1.6}
+.hint-text.show{display:block}
+.feedback{display:none;border-radius:12px;padding:16px 18px;margin-top:16px;animation:fadeIn .3s}
+.feedback.show{display:block}
+.feedback.ok{background:var(--okl);border:2px solid var(--ok)}
+.feedback.err{background:var(--errl);border:2px solid var(--err)}
+.fb-header{font-weight:800;font-size:.97rem;margin-bottom:6px}
+.feedback.ok .fb-header{color:var(--ok)}
+.feedback.err .fb-header{color:var(--err)}
+.fb-exp{font-size:.86rem;line-height:1.65;color:var(--text)}
+.btn-next{width:100%;margin-top:12px;background:linear-gradient(135deg,var(--primary),var(--acc));color:#fff;border:none;border-radius:12px;padding:13px;cursor:pointer;font-family:inherit;font-size:.93rem;font-weight:700;transition:.2s}
+.btn-next:hover{opacity:.88}
+/* COMPLETE */
+#complete{max-width:520px;margin:0 auto;padding:52px 16px;text-align:center}
+.c-icon{font-size:4.5rem;margin-bottom:16px;animation:bounce .6s}
+.c-title{font-size:1.8rem;font-weight:800;margin-bottom:8px}
+.c-sub{color:var(--ts);margin-bottom:16px;font-size:.92rem}
+.stars{font-size:2rem;margin-bottom:8px;letter-spacing:4px}
+.score-chip{display:inline-block;padding:8px 20px;border-radius:50px;background:var(--pl);color:var(--primary);font-weight:800;font-size:1rem;margin-bottom:20px}
+.weak-report{text-align:right;background:var(--surface);border-radius:12px;padding:16px;margin-bottom:20px;font-size:.86rem;box-shadow:var(--sh)}
+.weak-report h3{font-size:.88rem;margin-bottom:8px;color:var(--err)}
+.weak-item{padding:3px 0;color:var(--ts)}
+.btn-p{background:linear-gradient(135deg,var(--primary),var(--acc));color:#fff;border:none;border-radius:12px;padding:13px 28px;cursor:pointer;font-family:inherit;font-size:.93rem;font-weight:700;margin:6px;transition:.2s}
+.btn-p:hover{opacity:.88}
+.btn-s{background:var(--pl);color:var(--primary);border:none;border-radius:12px;padding:13px 28px;cursor:pointer;font-family:inherit;font-size:.93rem;font-weight:700;margin:6px;transition:.2s}
+.btn-s:hover{background:var(--primary);color:#fff}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.btn-preview{background:none;border:1px dashed var(--ts);color:var(--ts);border-radius:10px;padding:8px 20px;cursor:pointer;font-family:inherit;font-size:.8rem;transition:.2s}
+.btn-skip{background:none;border:1px dashed var(--ts);color:var(--ts);border-radius:8px;padding:5px 14px;cursor:pointer;font-family:inherit;font-size:.78rem;transition:.2s}
+.btn-skip:hover{border-color:var(--acc);color:var(--acc)}
+.btn-preview:hover{border-color:var(--primary);color:var(--primary)}
+.btn-preview.active{background:var(--errl);border-color:var(--err);color:var(--err)}
+/* INFO CARD */
+.btn-info{background:none;border:1px solid var(--sec);color:var(--sec);border-radius:8px;padding:5px 14px;cursor:pointer;font-family:inherit;font-size:.8rem;margin-bottom:14px;transition:.2s}
+.btn-info:hover{background:var(--secl)}
+.info-card{display:none;background:var(--secl);border:1px solid var(--sec);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:.86rem;line-height:1.8;white-space:pre-line}
+.info-card.show{display:block}
+/* Phase labels */
+.phase-badge{display:inline-block;background:var(--pl);color:var(--primary);font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+@media(max-width:480px){nav{padding:12px 14px}.ex-card{padding:18px 14px}.stats-bar{gap:0}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">🧠 منطقي الرياضي</div>
+  <button class="btn-theme" id="theme-btn" onclick="toggleTheme()">🌙 داكن</button>
+</nav>
+
+<div id="home">
+  <div class="hero">
+    <h1>بناء المنطق الرياضي</h1>
+    <p>تدرّبي على استنتاج العلاقات الرياضية تلقائياً — اقتصاد، فيزياء، رياضيات، كيمياء</p>
+  </div>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num" id="st-done">0</div><div class="stat-label">تمرين أُنجز</div></div>
+    <div class="stat"><div class="stat-num" id="st-cor">0</div><div class="stat-label">إجابة صحيحة</div></div>
+    <div class="stat"><div class="stat-num" id="st-pct">—</div><div class="stat-label">معدل النجاح</div></div>
+    <div class="stat"><div class="stat-num" id="st-str">🔥0</div><div class="stat-label">سلسلة صحيحة</div></div>
+  </div>
+  <div class="levels-grid" id="levels-grid"></div>
+  <div style="text-align:center;margin-top:20px">
+    <button class="btn-preview" id="preview-btn" onclick="togglePreview()">🔓 وضع المعاينة — افتح جميع المستويات</button>
+  </div>
+</div>
+
+<div id="exercise" class="hidden">
+  <div class="ex-top">
+    <button class="btn-back" onclick="backHome()">← رجوع</button>
+    <div class="ex-bar-wrap">
+      <div class="ex-bar"><div class="ex-bar-fill" id="ex-fill" style="width:0%"></div></div>
+      <div class="ex-count" id="ex-count"></div>
+    </div>
+  </div>
+  <div id="adapt-wrap"></div>
+  <div class="ex-card">
+    <div class="dchip" id="ex-domain"></div>
+    <div class="phase-badge" id="phase-badge" style="display:none"></div>
+    <div id="info-wrap"></div>
+    <div class="sbox"><div class="slabel">الموقف</div><div id="ex-sit"></div></div>
+    <div class="question" id="ex-q"></div>
+    <div id="ex-ans"></div>
+    <div style="text-align:left;margin-top:10px">
+      <button class="btn-skip" id="btn-skip" onclick="skipEx()">تخطي ◁</button>
+    </div>
+    <div class="feedback" id="ex-fb">
+      <div class="fb-header" id="fb-h"></div>
+      <div class="fb-exp" id="fb-e"></div>
+      <button class="btn-next" onclick="nextEx()">التمرين التالي ←</button>
+    </div>
+  </div>
+</div>
+
+<div id="complete" class="hidden">
+  <div class="c-icon" id="c-icon"></div>
+  <div class="c-title" id="c-title"></div>
+  <div class="c-sub" id="c-sub"></div>
+  <div class="stars" id="c-stars"></div>
+  <div class="score-chip" id="c-score"></div>
+  <div class="weak-report" id="c-weak"></div>
+  <button class="btn-p" onclick="backHome()">العودة للرئيسية</button>
+  <button class="btn-s" onclick="retryLv()">إعادة هذا المستوى 🔄</button>
+</div>
+
+<script>
+'use strict';
+// ══════════════════════════════════════════════
+//  DATABASE — 150 EXERCISES
+// ══════════════════════════════════════════════
+const DB=[
+// ─────────── LEVEL 1 ───────────
+// ══════════════════════════════════════════════════════════
+//  LEVEL 1 — بناء المسار الصحيح
+//  المرحلة أ (1-10): خطوة واحدة — تدرج حقيقي في الصعوبة
+//  المرحلة ب (11-15): خطوتان
+//  المرحلة ج (16-20): سلسلة كاملة
+// ══════════════════════════════════════════════════════════
+
+// ── المرحلة أ — تمارين 1-3: الكميتان مذكورتان صراحةً ──
+
+{id:1,level:1,domain:"حياة يومية",
+situation:"اشتريتِ 6 دفاتر، كل دفتر بـ 25 دج.",
+info:"📌 المبلغ الإجمالي = سعر القطعة × عدد القطع\n→ في الاقتصاد: رقم الأعمال (CA) = السعر (P) × الكمية (Q)",
+question:"أي عملية تستعملين لإيجاد المبلغ الإجمالي؟",
+type:"mcq",options:["ضرب: 25 × 6","جمع: 25 + 6","قسمة: 25 ÷ 6","طرح: 25 − 6"],answer:0,
+hint:"كل دفتر = 25 دج. عدد الدفاتر = 6.",
+explanation:"25 × 6 = 150 دج. نضرب لأن كل وحدة لها سعر ثابت. هذا هو CA = P × Q."},
+
+{id:2,level:1,domain:"حياة يومية",
+situation:"بعتِ 30 كوب عصير بـ 50 دج للكوب. وكانت تكلفة مواد الإنتاج الإجمالية 420 دج.",
+info:"📌 الربح = المال المجموع − ما أُنفق\n→ في الاقتصاد: نتيجة الاستغلال (R) = رقم الأعمال (CA) − التكاليف الإجمالية (CT)",
+question:"أي عملية تستعملين لإيجاد الربح؟",
+type:"mcq",options:["طرح: (30×50) − 420","جمع: (30×50) + 420","قسمة: (30×50) ÷ 420","ضرب: 30 × 50 × 420"],answer:0,
+hint:"الربح = ما دخل − ما خرج.",
+explanation:"CA = 1500 دج. الربح = 1500 − 420 = 1080 دج. R = CA − CT."},
+
+{id:3,level:1,domain:"حياة يومية",
+situation:"اشتريتِ علبة بـ 300 دج وبعتِها بـ 450 دج.",
+info:"📌 الربح على القطعة = سعر البيع − تكلفة الشراء\n→ في الاقتصاد: هامش الوحدة (m) = P − cv",
+question:"أي عملية تستعملين لإيجاد ما ربحتِه على هذه العلبة؟",
+type:"mcq",options:["طرح: 450 − 300","جمع: 450 + 300","ضرب: 450 × 300","قسمة: 450 ÷ 300"],answer:0,
+hint:"ربح الوحدة = ما بعتِه − ما اشتريتِه.",
+explanation:"m = 450 − 300 = 150 دج. هذا هو هامش الوحدة = P − cv."},
+
+// ── تمارين 4-6: تحددين الكميتين بنفسك من النص ──
+
+{id:4,level:1,domain:"حياة يومية",
+situation:"تبيعين فطائر منزلية. كل فطيرة تكلف موادها 45 دج وتبيعينها بـ 70 دج. هذا الأسبوع بعتِ 40 فطيرة وكانت أجرة توصيلك 200 دج.",
+info:"📌 هامش الوحدة (m) = سعر البيع (P) − تكلفة المواد للوحدة (cv)\nرقم الأعمال (CA) = P × Q",
+question:"لمعرفة كم ربحتِ على كل فطيرة، أي كميتين تستعملين؟",
+type:"mcq",options:["70 و 45 فقط (سعر البيع وتكلفة المواد)","70 و 40 (السعر والكمية المباعة)","45 و 40 (تكلفة المواد والكمية)","70 و 200 (السعر والتوصيل)"],answer:0,
+hint:"هامش الوحدة لا علاقة له بالكمية ولا بالتوصيل.",
+explanation:"m = 70 − 45 = 25 دج. الـ 200 دج أجرة توصيل هي تكلفة ثابتة تُستخدم لاحقاً لحساب الربح الإجمالي، لكن هامش الوحدة = P − cv فقط."},
+
+{id:5,level:1,domain:"حياة يومية",
+situation:"صديقتك تبيع مجوهرات يدوية. قالت لكِ: سعر القطعة 800 دج، وقد باعت هذا الشهر 25 قطعة، والمواد الخام كلّفتها 4500 دج للشهر كله، وأجرة التغليف 300 دج للشهر.",
+info:"📌 رقم الأعمال (CA) = سعر البيع (P) × الكمية المباعة (Q)\nلا علاقة لـ CA بالتكاليف",
+question:"لحساب رقم الأعمال فقط، أي كميتين تستعملين؟",
+type:"mcq",options:["800 و 25 (السعر والكمية)","4500 و 25 (المواد والكمية)","800 و 4500 (السعر والمواد)","800 و 300 (السعر والتغليف)"],answer:0,
+hint:"رقم الأعمال = ما جُمع من البيع فقط، لا علاقة له بالتكاليف.",
+explanation:"CA = 800 × 25 = 20,000 دج. رقم الأعمال يعتمد على السعر والكمية فقط. التكاليف تُستخدم لحساب الربح لاحقاً."},
+
+{id:6,level:1,domain:"حياة يومية",
+situation:"تريدين معرفة نسبة ما تكسبينه من كل دينار تبيعينه. كل فطيرة تبيعينها بـ 70 دج وهامش كل فطيرة 25 دج. بعتِ هذا الأسبوع 40 فطيرة.",
+info:"📌 معدل الهامش (t) = هامش الوحدة ÷ سعر البيع\n→ يخبرك كم دج يبقى لكِ من كل 100 دج مبيعات",
+question:"لحساب النسبة من كل دينار، أي كميتين تستعملين؟",
+type:"mcq",options:["25 و 70 (الهامش والسعر)","25 و 40 (الهامش والكمية)","70 و 40 (السعر والكمية)","25 و 70 و 40 (الثلاثة معاً)"],answer:0,
+hint:"النسبة من كل دينار = الهامش ÷ السعر. الكمية لا تدخل هنا.",
+explanation:"t = 25 ÷ 70 = 35.7%. من كل 100 دج تبيعينها، 35.7 دج ربح صافٍ. الكمية (40) لا تؤثر على هذه النسبة."},
+
+// ── تمارين 7-10: نص يحتوي معلومات زائدة — تختارين ما يلزم فقط ──
+
+{id:7,level:1,domain:"حياة يومية",
+situation:"مقهاكِ: سعر كوب القهوة 80 دج، المواد 30 دج/كوب، الأجرة الشهرية 12,000 دج، الكهرباء 2,000 دج/شهر، بعتِ هذا الشهر 300 كوب، وعندك 3 موظفات.",
+info:"📌 التكاليف الثابتة (CF) = لا تتغير مع الإنتاج (أجرة + كهرباء...)\nالتكاليف المتغيرة الإجمالية (CV) = cv × Q",
+question:"لحساب التكاليف الثابتة الشهرية فقط، أي أرقام تستعملين؟",
+type:"mcq",options:["12,000 + 2,000 (الأجرة والكهرباء فقط)","12,000 + 2,000 + (30 × 300)","80 × 300","30 × 300 فقط"],answer:0,
+hint:"التكاليف الثابتة موجودة حتى لو لم تبيعي كوباً واحداً.",
+explanation:"CF = 12000 + 2000 = 14,000 دج. المواد (30×300) هي تكاليف متغيرة. عدد الموظفات لم يُعطَ له قيمة نقدية هنا فلا يُستخدم."},
+
+{id:8,level:1,domain:"حياة يومية",
+situation:"تبيعين برغر من محل صغير. سعر البرغر 120 دج، مواد البرغر تكلف 45 دج. الأجرة الشهرية 8,000 دج، فاتورة الكهرباء 1,500 دج/شهر، بعتِ 150 برغر هذا الشهر، وأجرة توصيل إجمالية 600 دج.",
+info:"📌 هامش الوحدة (m) = سعر البيع − تكلفة المواد للوحدة فقط\nالتكاليف الأخرى (أجرة، كهرباء، توصيل) لا تدخل في حساب هامش الوحدة",
+question:"لحساب هامش البرغر الواحد، أي رقمين تستعملين؟",
+type:"mcq",options:["120 و 45 (السعر ومواد البرغر)","120 و 8000 (السعر والأجرة)","120 و 600 (السعر والتوصيل)","45 و 150 (المواد والكمية)"],answer:0,
+hint:"هامش الوحدة = سعر البيع − تكلفة موادها المباشرة فقط.",
+explanation:"m = 120 − 45 = 75 دج/برغر. الأجرة والكهرباء والتوصيل تكاليف أخرى — لا تدخل في هامش الوحدة الواحدة."},
+
+{id:9,level:1,domain:"حياة يومية",
+situation:"صديقتك تبيع مجوهرات: سعر القطعة 800 دج، هامش القطعة 350 دج، باعت 25 قطعة، أجرة محلها 5,000 دج/شهر، وتصوّر منتجاتها بـ 300 دج/شهر.",
+info:"📌 عتبة المردودية بالوحدات = التكاليف الثابتة الإجمالية ÷ هامش الوحدة\nالتكاليف الثابتة = كل ما يُدفع بغض النظر عن الكمية المباعة",
+question:"لحساب كم قطعة تحتاج تبيع شهرياً لتغطية مصاريفها، أي أرقام تستعملين؟",
+type:"mcq",options:["(5000+300) و 350 (CF الكاملة والهامش)","5000 و 350 (الأجرة فقط والهامش)","350 و 25 (الهامش والكمية المباعة)","800 و 350 (السعر والهامش)"],answer:0,
+hint:"CF = كل التكاليف الثابتة مجتمعة. عتبة المردودية = CF ÷ هامش.",
+explanation:"CF = 5000 + 300 = 5300 دج. عتبة المردودية = 5300 ÷ 350 ≈ 16 قطعة. الكمية المباعة (25) لا تدخل في حساب العتبة."},
+
+{id:10,level:1,domain:"حياة يومية",
+situation:"في الفيزياء: سيارة قطعت 240 كم في وقت مجهول بسرعة 80 كم/ساعة. توقفت 30 دقيقة للراحة. وزن السيارة 1200 كغ.",
+info:"📌 الزمن = المسافة ÷ السرعة\n→ t = d ÷ v\nلا علاقة للزمن بالوزن أو فترة التوقف في هذا السؤال",
+question:"لحساب وقت السير فقط (بدون التوقف)، أي كميتين تستعملين؟",
+type:"mcq",options:["240 و 80 (المسافة والسرعة)","240 و 0.5 (المسافة والتوقف)","80 و 1200 (السرعة والوزن)","240 و 1200 (المسافة والوزن)"],answer:0,
+hint:"وقت السير = مسافة ÷ سرعة. الوزن والتوقف لا علاقة لهما.",
+explanation:"t = 240 ÷ 80 = 3 ساعات. الوزن (1200 كغ) يُستخدم في حسابات أخرى كالقوة والطاقة. التوقف يُضاف للزمن الكلي للرحلة فقط."},
+
+// ══ المرحلة ب (11-15): خطوتان — تدرج في وضوح المسار ══
+
+// ── تمارين 11-12: الخطوتان واضحتان ومرتّبتان ──
+
+{id:11,level:1,domain:"حياة يومية",
+situation:"تبيعين فساتين: سعر الفستان 1200 دج، مواده تكلف 500 دج. أجرة محلك 9000 دج/شهر. تريدين معرفة كم فستاناً تبيعين شهرياً لتغطي الأجرة فقط.",
+info:"📌 الخطوة 1: هامش الوحدة (m) = P − cv\nالخطوة 2: عتبة المردودية بالوحدات = CF ÷ m",
+question:"ما الخطوة الأولى التي لا يمكن تخطّيها؟",
+type:"mcq",options:["حساب هامش الفستان = 1200 − 500","قسمة الأجرة على السعر = 9000 ÷ 1200","حساب رقم الأعمال = 1200 × عدد الفساتين","جمع السعر والأجرة = 1200 + 9000"],answer:0,
+hint:"لتعرفي كم فستاناً تحتاجين، يجب أن تعرفي أولاً كم تكسبين من كل فستان.",
+explanation:"الخطوة 1: m = 1200−500 = 700 دج/فستان. الخطوة 2: العتبة = 9000÷700 ≈ 13 فستان. لا يمكن الوصول للخطوة 2 بدون الخطوة 1."},
+
+{id:12,level:1,domain:"حياة يومية",
+situation:"في الفيزياء: رفعتِ صندوقاً كتلته 10 كغ إلى ارتفاع 2 م في 4 ثواني. g = 10 م/ث². تريدين معرفة القدرة التي بذلتِها.",
+info:"📌 الخطوة 1: الشغل (W) = الكتلة × g × الارتفاع = m × g × h\nالخطوة 2: القدرة (P) = الشغل ÷ الزمن = W ÷ t",
+question:"ما الذي تحسبينه أولاً للوصول للقدرة؟",
+type:"mcq",options:["الشغل: 10 × 10 × 2 = 200 ج","القدرة مباشرة: 10 × 10 ÷ 4","الزمن × الكتلة: 4 × 10","الارتفاع ÷ الزمن: 2 ÷ 4"],answer:0,
+hint:"القدرة تحتاج الشغل. هل حسبتِ الشغل أولاً؟",
+explanation:"الخطوة 1: W = 10×10×2 = 200 ج. الخطوة 2: P = 200÷4 = 50 واط. القدرة مستحيل حسابها بدون الشغل أولاً."},
+
+// ── تمارين 13-15: الخطوة الأولى غير واضحة مباشرة ──
+
+{id:13,level:1,domain:"حياة يومية",
+situation:"تبيعين عصائر طبيعية بسعر 70 دج للكوب. تكلفة المواد 20 دج/كوب. أجرة المحل والكهرباء = 12,000 دج/شهر. في نهاية الشهر وجدتِ أن رقم أعمالك 21,000 دج. هل ربحتِ؟",
+info:"📌 للوصول للربح من رقم الأعمال:\nالخطوة 1: Q = CA ÷ P (لأن الكمية غير معروفة)\nالخطوة 2: CV = cv × Q\nالخطوة 3: CT = CF + CV\nالخطوة 4: R = CA − CT",
+question:"ما أصعب ما في هذا السؤال؟ وما الخطوة الأولى الفعلية؟",
+type:"mcq",options:["الكمية غير معروفة → نستخرجها: Q = 21000 ÷ 70 = 300 كوب","نحسب الربح مباشرة: 21000 − 12000","نحسب الهامش: 70 − 20 = 50","نجمع التكاليف: 20 + 12000"],answer:0,
+hint:"لحساب التكاليف المتغيرة تحتاجين الكمية. كيف تستخرجينها؟",
+explanation:"Q = 21000÷70 = 300 كوب. CV = 20×300 = 6,000. CT = 12000+6000 = 18,000. R = 21000−18000 = 3,000 دج ربح."},
+
+{id:14,level:1,domain:"حياة يومية",
+situation:"تريدين شراء لابتوب بـ 65,000 دج. عندك 20,000 دج. قررتِ ادخار 15% من راتبك الشهري البالغ 30,000 دج.",
+info:"📌 المسار:\nالخطوة 1: الادخار الشهري = الراتب × النسبة\nالخطوة 2: المبلغ الناقص = السعر − ما عندك\nالخطوة 3: عدد الأشهر = المبلغ الناقص ÷ الادخار الشهري",
+question:"كثير من الناس يبدأون بطرح 65000 − 20000. لكن ما الذي يجب حسابه قبل هذا؟",
+type:"mcq",options:["الادخار الشهري = 30000 × 15% = 4500 دج","المبلغ الناقص = 65000 − 20000 = 45000","عدد الأشهر = 45000 ÷ 30000","النسبة الكلية = 65000 ÷ 20000"],answer:0,
+hint:"قبل أن تعرفي كم شهراً، تحتاجين كم تدخرين كل شهر.",
+explanation:"الخطوة 1: الادخار = 30000×0.15 = 4500 دج/شهر. الخطوة 2: الناقص = 65000−20000 = 45,000. الخطوة 3: الأشهر = 45000÷4500 = 10 أشهر."},
+
+{id:15,level:1,domain:"حياة يومية",
+situation:"في الكيمياء: تريدين تحضير 500 مل من محلول HCl تركيزه 0.2 mol/L، انطلاقاً من محلول مركّز تركيزه 6 mol/L. والكتلة المولية لـ HCl = 36.5 غ/مول.",
+info:"📌 قانون التخفيف: C₁ × V₁ = C₂ × V₂\nالمجهول هو V₁ (الحجم المأخوذ من المركّز)\nالكتلة المولية معلومة لكنها غير ضرورية هنا",
+question:"قبل أي حساب، ما الذي يجب تحديده أولاً؟",
+type:"mcq",options:["تحديد المعلوم والمجهول: C₁=6، C₂=0.2، V₂=0.5L، V₁=؟","حساب عدد المولات = 0.2 × 0.5 أولاً","تحويل 500 مل إلى لتر أولاً: 500÷1000","استعمال الكتلة المولية 36.5 أولاً"],answer:0,
+hint:"في كل مسألة علمية: حدد ما تعرفينه وما تبحثين عنه قبل أي عملية.",
+explanation:"أولاً: نحدد المعلوم والمجهول. C₁=6، C₂=0.2، V₂=500مل=0.5L، V₁=؟. ثم: V₁ = (0.2×0.5)÷6 = 0.0167L = 16.7 مل. الكتلة المولية 36.5 معلومة مشتّتة غير مطلوبة."},
+
+// ══ المرحلة ج (16-20): سلسلة كاملة — تدرج في مدى وضوح المسار ══
+
+// ── تمارين 16-17: المسار واضح لكن طويل ──
+
+{id:16,level:1,domain:"حياة يومية",
+situation:"تريدين فتح مشروع بيع عصائر طبيعية:\n• سعر الكوب = 80 دج\n• تكلفة مواد الكوب = 35 دج\n• أجرة + فواتير شهرية = 22,500 دج\nكم كوباً يجب بيعه يومياً (30 يوم) حتى لا تخسري؟",
+info:"📌 المسار الكامل:\n1) هامش الكوب: m = P − cv\n2) أكواب العتبة شهرياً = CF ÷ m\n3) أكواب العتبة يومياً = الشهري ÷ 30",
+question:"من أين تبدئين أولاً؟",
+type:"mcq",options:["هامش الكوب = 80 − 35 = 45 دج","عتبة مباشرة = 22500 ÷ 80","الأكواب اليومية = 22500 ÷ 30","CF ÷ 30 ÷ هامش"],answer:0,
+hint:"قبل أي شيء: كم تكسبين من كل كوب؟",
+explanation:"1) m = 45 دج. 2) أكواب/شهر = 22500÷45 = 500 كوب. 3) أكواب/يوم = 500÷30 ≈ 17 كوب. لا يمكن تخطّي أي خطوة."},
+
+{id:17,level:1,domain:"حياة يومية",
+situation:"في الفيزياء: سيارة تسير بـ 90 كم/ساعة تفرمل فجأة وتتوقف خلال 5 ثواني.\nأريد معرفة: مسافة الفرملة.",
+info:"📌 المسار:\n1) تحويل السرعة: v(م/ث) = v(كم/سا) ÷ 3.6\n2) التباطؤ: a = v ÷ t\n3) مسافة الفرملة: d = v² ÷ (2 × a)",
+question:"ما أول خطوة لا يمكن تخطّيها؟",
+type:"mcq",options:["تحويل السرعة: 90 ÷ 3.6 = 25 م/ث","التباطؤ مباشرة: 90 ÷ 5 = 18","المسافة مباشرة: 90 × 5 ÷ 2","تحويل الزمن: 5 ÷ 60"],answer:0,
+hint:"المعادلات الفيزيائية تستعمل م/ث لا كم/سا. ما الذي يجب تحويله أولاً؟",
+explanation:"1) v = 90÷3.6 = 25 م/ث. 2) a = 25÷5 = 5 م/ث². 3) d = 625÷10 = 62.5 م. البدء بـ 90÷5 خطأ لأن الوحدات غير متوافقة."},
+
+// ── تمارين 18-20: المسار غير واضح — تحتاجين اكتشافه ──
+
+{id:18,level:1,domain:"حياة يومية",
+situation:"محل بيع ملابس هذا الشهر:\n• باع 200 قطعة بسعر 500 دج\n• تكلفة الوحدة المتغيرة 200 دج\n• أجرة + كهرباء = 40,000 دج\nصاحبة المحل تقول: 'ربحي = 200×500 − 40,000 = 60,000 دج'. هل هي محقة؟",
+info:"📌 الربح الحقيقي يحتاج طرح التكاليف الكاملة:\nR = CA − CT\nCT = CF + CV\nCV = cv × Q\nالخطأ الشائع: نسيان طرح التكاليف المتغيرة!",
+question:"أين الخطأ في حساب صاحبة المحل؟",
+type:"mcq",options:["نسيت طرح تكلفة المواد (200 × 200 = 40,000 دج)","الحساب صحيح تماماً","يجب ضرب 40,000 في عدد القطع","السعر المستخدم خاطئ"],answer:0,
+hint:"التكاليف الكاملة = ثابتة + متغيرة. هل طُرحت التكاليف المتغيرة؟",
+explanation:"صاحبة المحل نسيت CV = 200×200 = 40,000 دج. الربح الحقيقي = 100,000 − 40,000 − 40,000 = 20,000 دج وليس 60,000 دج!"},
+
+{id:19,level:1,domain:"حياة يومية",
+situation:"تريدين مقارنة عرضين لشراء غسالة:\n• العرض أ: 45,000 دج نقداً\n• العرض ب: 4,200 دج/شهر × 12 شهراً + ضمان 1,500 دج\nأيهما أوفر؟ وتريدين أيضاً معرفة نسبة الفرق من سعر العرض أ.",
+info:"📌 المسار:\n1) تكلفة ب الكاملة = (القسط × الأشهر) + الضمان\n2) الفرق = تكلفة ب − تكلفة أ\n3) نسبة الفرق = الفرق ÷ تكلفة أ × 100",
+question:"من أين تبدئين وما الترتيب الصحيح للخطوات الثلاث؟",
+type:"mcq",options:["تكلفة ب كاملة → الفرق → النسبة المئوية","الفرق مباشرة → النسبة → تكلفة ب","النسبة أولاً → تكلفة ب → الفرق","الفرق = 45000 − 4200 مباشرة"],answer:0,
+hint:"لا يمكن حساب الفرق قبل معرفة تكلفة ب الكاملة.",
+explanation:"1) تكلفة ب = (4200×12)+1500 = 51,900 دج. 2) الفرق = 51900−45000 = 6,900 دج. 3) النسبة = 6900÷45000×100 = 15.3%. العرض أ أوفر بـ 15.3%."},
+
+{id:20,level:1,domain:"حياة يومية",
+situation:"في الكيمياء: عندك 200 مل من محلول NaOH تركيزه 2 mol/L. تريدين إضافته إلى محلول HCl تركيزه 1.5 mol/L حتى يتعادل التفاعل. التفاعل: NaOH + HCl → NaCl + H₂O (نسبة 1:1). كم مل من HCl تحتاجين؟",
+info:"📌 المسار:\n1) مولات NaOH = C × V(L)\n2) مولات HCl اللازمة = مولات NaOH (نسبة 1:1)\n3) حجم HCl = مولات HCl ÷ تركيز HCl",
+question:"ما الخطوة الأولى وما سبب اختيارها؟",
+type:"mcq",options:["حساب مولات NaOH = 2 × 0.2 ← لأنها الكمية المعروفة التي نبدأ منها","حجم HCl مباشرة = 200 × 2 ÷ 1.5","تركيز HCl ÷ تركيز NaOH","جمع التركيزين = 2 + 1.5"],answer:0,
+hint:"دائماً نبدأ بالكمية المعروفة كاملاً ونستخرج منها ما نحتاجه.",
+explanation:"1) n(NaOH) = 2×0.2 = 0.4 مول. 2) n(HCl) = 0.4 مول (نسبة 1:1). 3) V(HCl) = 0.4÷1.5 = 0.267 L = 267 مل."},
+
+// ─────────── LEVEL 2 ───────────
+// ══════════════════════════════════════════════════════════
+//  LEVEL 2 — بناء المعادلة الصحيحة
+//  6 تمارين × 5 مجالات = 30 تمريناً
+//  المرحلة أ (31-40): معادلة مباشرة، 3 كميات واضحة
+//  المرحلة ب (41-50): كميات زائدة، تحددين ما يدخل
+//  المرحلة ج (51-60): معادلة مركّبة من خطوتين
+// ══════════════════════════════════════════════════════════
+
+// ════════ المرحلة أ — معادلة مباشرة ════════
+
+// ── اقتصاد ──
+{id:31,level:2,domain:"اقتصاد",
+situation:"فتحتِ مشروع بيع عصائر. سعر الكوب (P) = 60 دج. تكلفة مواد الكوب (cv) = 25 دج. تريدين معرفة كم تكسبين من كل كوب تبيعينه (هامش الوحدة).",
+info:"📌 هامش الوحدة (m) = سعر البيع − تكلفة المواد للوحدة\nm = P − cv\nهذا الهامش هو ما سيغطي تدريجياً أجرة المحل والفواتير",
+question:"أي معادلة صحيحة لحساب الهامش؟",
+type:"mcq",options:["m = P − cv = 60 − 25 = 35 دج","m = P + cv = 60 + 25 = 85 دج","m = P × cv = 60 × 25 = 1500 دج","m = P ÷ cv = 60 ÷ 25 = 2.4"],answer:0,
+hint:"الهامش = ما يدخل − ما يخرج على الإنتاج.",
+explanation:"m = 60 − 25 = 35 دج/كوب. من كل كوب، 35 دج تبقى لتغطية التكاليف الثابتة ثم الربح."},
+
+{id:32,level:2,domain:"اقتصاد",
+situation:"تبيعين عصائر. هامش الكوب الواحد (m) = 35 دج. سعر الكوب (P) = 60 دج. تريدين معرفة نسبة ما تكسبينه من كل 100 دج تبيعينها (معدل الهامش).",
+info:"📌 معدل الهامش (t) = هامش الوحدة ÷ سعر البيع\nt = m ÷ P\nيخبرك: من كل 100 دج مبيعات، كم دج يبقى بعد تكاليف الإنتاج؟",
+question:"أي معادلة صحيحة؟",
+type:"mcq",options:["t = m ÷ P = 35 ÷ 60 = 58.3%","t = P ÷ m = 60 ÷ 35 = 171%","t = m × P = 35 × 60 = 2100","t = m + P = 35 + 60 = 95"],answer:0,
+hint:"المعدل نسبة: الهامش من السعر. النسبة تُحسب بالقسمة.",
+explanation:"t = 35÷60 = 58.3%. من كل 100 دج تبيعينها، 58.3 دج تبقى بعد تكاليف المواد."},
+
+// ── فيزياء ──
+{id:33,level:2,domain:"فيزياء",
+situation:"سيارة قطعت مسافة (d) = 210 كم في زمن (t) = 2.5 ساعة. تريدين حساب سرعتها المتوسطة (v).",
+info:"📌 السرعة المتوسطة = المسافة ÷ الزمن\nv = d ÷ t\nمنطق: كم كيلومتراً في كل ساعة؟ → نقسم الكل على الزمن",
+question:"أي معادلة صحيحة؟",
+type:"mcq",options:["v = d ÷ t = 210 ÷ 2.5 = 84 كم/سا","v = d × t = 210 × 2.5 = 525","v = t ÷ d = 2.5 ÷ 210","v = d + t = 212.5"],answer:0,
+hint:"السرعة = كم كيلومتراً في كل ساعة → قسمة.",
+explanation:"v = 210 ÷ 2.5 = 84 كم/سا. نفس المنطق دائماً: معدل = كمية ÷ وحدة زمن."},
+
+{id:34,level:2,domain:"فيزياء",
+situation:"دفعتِ صندوقاً بقوة (F) = 50 N فتحرك مسافة (d) = 4 م في اتجاه القوة. تريدين حساب الشغل المبذول (W).",
+info:"📌 الشغل = القوة × الإزاحة في اتجاه القوة\nW = F × d\nمنطق: قوة أكبر أو مسافة أطول = شغل أكبر → ضرب",
+question:"أي معادلة صحيحة؟",
+type:"mcq",options:["W = F × d = 50 × 4 = 200 ج","W = F + d = 50 + 4 = 54","W = F ÷ d = 50 ÷ 4 = 12.5","W = d ÷ F = 4 ÷ 50"],answer:0,
+hint:"الشغل يكبر مع القوة ومع المسافة معاً → ضرب.",
+explanation:"W = 50 × 4 = 200 جول. تخيّلي: إذا ضاعفتِ القوة ضاعف الشغل، وإذا ضاعفتِ المسافة ضاعف أيضاً → ضرب."},
+
+// ── كيمياء ──
+{id:35,level:2,domain:"كيمياء",
+situation:"عندك مادة كتلتها (m) = 18 غ وكتلتها المولية (M) = 18 غ/مول (مثل الماء H₂O). تريدين معرفة عدد المولات (n).",
+info:"📌 عدد المولات = الكتلة ÷ الكتلة المولية\nn = m ÷ M\nمنطق: كم مرة يدخل 'المول الواحد' في كتلتك الكلية؟ → قسمة",
+question:"أي معادلة صحيحة؟",
+type:"mcq",options:["n = m ÷ M = 18 ÷ 18 = 1 مول","n = m × M = 18 × 18 = 324","n = M ÷ m = 18 ÷ 18 = 1","n = m + M = 36"],answer:0,
+hint:"الكتلة المولية = كتلة المول الواحد. نقسم الكل على الوحدة.",
+explanation:"n = 18÷18 = 1 مول. المنطق: إذا كان المول الواحد = 18 غ وعندك 18 غ → عندك مول واحد بالضبط."},
+
+{id:36,level:2,domain:"كيمياء",
+situation:"ذوّبتِ مادة عددها (n) = 0.5 مول في محلول حجمه (V) = 250 مل = 0.25 لتر. تريدين حساب تركيز المحلول (C).",
+info:"📌 التركيز = عدد المولات ÷ الحجم بالليتر\nC = n ÷ V\nمنطق: كم مول يوجد في كل لتر واحد؟ → قسمة",
+question:"أي معادلة صحيحة؟",
+type:"mcq",options:["C = n ÷ V = 0.5 ÷ 0.25 = 2 mol/L","C = n × V = 0.5 × 0.25 = 0.125","C = V ÷ n = 0.25 ÷ 0.5 = 0.5","C = n + V = 0.75"],answer:0,
+hint:"التركيز = كم مول في كل لتر → قسمة.",
+explanation:"C = 0.5÷0.25 = 2 mol/L. أي في كل لتر من هذا المحلول يوجد 2 مول من المادة."},
+
+// ── رياضيات ──
+{id:37,level:2,domain:"رياضيات",
+situation:"سعر سلعة كان (Q₀) = 4000 دج وأصبح (Q₁) = 4800 دج. تريدين حساب نسبة الارتفاع (معدل النمو).",
+info:"📌 معدل النمو = (القيمة الجديدة − القيمة القديمة) ÷ القيمة القديمة × 100\ng = (Q₁ − Q₀) ÷ Q₀ × 100\nمنطق: التغير كنسبة من الأصل — الأصل هو المرجع دائماً",
+question:"أي معادلة صحيحة؟",
+type:"mcq",options:["g = (4800−4000) ÷ 4000 × 100 = 20%","g = (4800−4000) ÷ 4800 × 100 = 16.7%","g = 4800 ÷ 4000 × 100 = 120%","g = (4800+4000) ÷ 4000 × 100 = 220%"],answer:0,
+hint:"نقسم على القيمة القديمة لأنها هي المرجع الأصلي.",
+explanation:"g = 800÷4000×100 = 20%. خطأ شائع: القسمة على Q₁ الجديدة (تعطي 16.7% وهو خاطئ لأن المرجع هو الأصل)."},
+
+{id:38,level:2,domain:"رياضيات",
+situation:"قرية عدد سكانها (Q₀) = 10,000 نسمة. يزداد عدد سكانها بمعدل ثابت (لا تراكمي) = 6% من العدد الأصلي كل سنة، لمدة (n) = 4 سنوات (نمو خطي بسيط). تريدين حساب عدد السكان النهائي.",
+info:"📌 النمو الخطي البسيط: الزيادة كل سنة ثابتة محسوبة على الأصل فقط\nQ = Q₀ × (1 + r × n)\nمنطق: الزيادة نفسها كل سنة، لا تتراكم على نفسها",
+question:"أي معادلة صحيحة؟",
+type:"mcq",options:["Q = 10000 × (1 + 0.06×4) = 12,400 نسمة","Q = 10000 × (1.06)⁴ = 12,625 نسمة","Q = 10000 + 6% = 10,600 نسمة","Q = 10000 × 0.06 × 4 = 2,400 نسمة"],answer:0,
+hint:"النمو الخطي البسيط: نفس الزيادة كل سنة، تُحسب على الأصل فقط.",
+explanation:"Q = 10000×(1+0.24) = 12,400 نسمة. الزيادة السنوية = 600 نسمة × 4 سنوات = 2,400 نسمة إجمالاً."},
+
+// ── منطق وتفكير ناقد ──
+{id:39,level:2,domain:"منطق",
+situation:"مطعم يعلن: 'معدل رضا زبائننا 95%'. عندما تستفسرين، تكتشفين أنهم سألوا فقط 20 زبوناً من أصل 500.",
+info:"📌 العينة الممثِّلة: حجم العينة يجب أن يكون كافياً ومختاراً بشكل عشوائي\nالنسبة المئوية وحدها لا تكفي — يجب معرفة حجم العينة ومنهج اختيارها",
+question:"ما المشكلة الجوهرية في هذا الإحصاء؟",
+type:"mcq",options:["العينة صغيرة جداً (20 من 500) ولا تمثل الزبائن","النسبة 95% عالية جداً لتكون صحيحة","يجب أن تسألوا 100% من الزبائن","المطعم كذب في النتيجة"],answer:0,
+hint:"هل 20 شخص يمثلون رأي 500 شخص؟",
+explanation:"20 شخص = 4% فقط من الزبائن. قد يكون هؤلاء الـ20 مختارين بتحيّز (الأصدقاء، الراضون فقط). العبرة: دائماً اسألي عن حجم العينة قبل أن تثقي بأي إحصاء."},
+
+{id:40,level:2,domain:"منطق",
+situation:"صديقتك تقول: 'اشتريت هاتفاً بـ 50,000 دج وبعته بـ 45,000 دج، إذن خسرت 10%'. أنتِ لاحظتِ خطأً في حسابها.",
+info:"📌 نسبة الخسارة = الخسارة ÷ سعر الشراء × 100\nالمرجع دائماً هو سعر الشراء (القيمة الأصلية)\nالخطأ الشائع: القسمة على سعر البيع",
+question:"ما نسبة الخسارة الصحيحة؟",
+type:"mcq",options:["10% = 5000÷50000×100 (صحيح، صديقتك محقة)","9% = 5000÷55000×100","11.1% = 5000÷45000×100","5000 دج خسارة لكن النسبة لا تُحسب هكذا"],answer:0,
+hint:"نسبة الخسارة = الخسارة ÷ سعر الشراء. ما سعر الشراء هنا؟",
+explanation:"الخسارة = 5000 دج. نسبة الخسارة = 5000÷50000×100 = 10%. صديقتك محقة في النتيجة لكن للسبب الصحيح: المرجع هو سعر الشراء (50,000) وليس البيع."},
+
+// ════════ المرحلة ب — كميات زائدة ════════
+
+// ── اقتصاد ──
+{id:41,level:2,domain:"اقتصاد",
+situation:"مشروع عصائر: سعر الكوب 60 دج، مواد الكوب 25 دج، أجرة المحل 8,000 دج/شهر، فاتورة كهرباء 1,500 دج/شهر، باعت هذا الشهر 300 كوب، رقم الأعمال 18,000 دج.",
+info:"📌 التكاليف الثابتة (CF) = كل ما يُدفع بغض النظر عن الكمية المباعة\nالتكاليف المتغيرة الإجمالية (CV) = cv × Q\nمجموع التكاليف (CT) = CF + CV",
+question:"لحساب مجموع التكاليف الشهرية، أي معادلة صحيحة؟",
+type:"mcq",options:["CT = (8000+1500) + (25×300) = 17,000 دج","CT = 8000 + 1500 + 60×300 = 27,500 دج","CT = 18000 − 8000 − 1500 = 8,500 دج","CT = (60−25) × 300 = 10,500 دج"],answer:0,
+hint:"CT = CF + CV. CF = كل الثابتة. CV = cv × الكمية (ليس السعر).",
+explanation:"CF = 9,500 دج. CV = 25×300 = 7,500 دج. CT = 17,000 دج. رقم الأعمال (18,000) وسعر البيع (60) لا يدخلان في حساب التكاليف."},
+
+{id:42,level:2,domain:"اقتصاد",
+situation:"تريدين مقارنة عرضين لشراء ثلاجة:\n• العرض أ: 55,000 دج نقداً + ضمان 2 سنوات\n• العرض ب: 5,200 دج/شهر × 12 شهراً + تأمين 2,000 دج + ضمان 3 سنوات",
+info:"📌 التكلفة الكلية للعرض ب = (القسط × عدد الأشهر) + التأمين\nالضمان ميزة نوعية لا تكلفة نقدية → لا يدخل في الحساب المالي",
+question:"ما التكلفة الكلية للعرض ب؟",
+type:"mcq",options:["تكلفة_ب = (5200×12) + 2000 = 64,400 دج","تكلفة_ب = 5200×12 = 62,400 دج","تكلفة_ب = 5200×12 + 2000 + ضمان","تكلفة_ب = (5200+2000) × 12 = 86,400 دج"],answer:0,
+hint:"الضمان ميزة وليس تكلفة نقدية. التأمين يُدفع مرة واحدة.",
+explanation:"تكلفة_ب = 62,400+2,000 = 64,400 دج. العرض أ أوفر بـ 9,400 دج. الضمان الأطول للعرض ب ميزة نوعية تضعينها في الاعتبار لكنها لا تدخل في الحساب المالي."},
+
+// ── فيزياء ──
+{id:43,level:2,domain:"فيزياء",
+situation:"سيارة كتلتها 1,000 كغ، قوة محركها 5,000 N، قوة احتكاك الطريق 800 N، وزنها 10,000 N، سرعتها الابتدائية 0.",
+info:"📌 القوة المحرّكة الصافية = قوة المحرك − قوة الاحتكاك\nالتسارع: a = F_صافية ÷ الكتلة\nالوزن يعمل في الاتجاه الشاقولي فقط → لا يدخل في حساب التسارع الأفقي",
+question:"أي معادلة صحيحة لحساب تسارع السيارة؟",
+type:"mcq",options:["a = (5000−800) ÷ 1000 = 4.2 م/ث²","a = 5000 ÷ 1000 = 5 م/ث²","a = (5000−800) ÷ 10000 = 0.42 م/ث²","a = 5000 ÷ 10000 = 0.5 م/ث²"],answer:0,
+hint:"الوزن (10,000 N) شاقولي. التسارع الأفقي يحتاج الكتلة (1,000 كغ) لا الوزن.",
+explanation:"F_صافية = 5000−800 = 4,200 N. a = 4200÷1000 = 4.2 م/ث². خطأ شائع: القسمة على الوزن بدل الكتلة."},
+
+{id:44,level:2,domain:"فيزياء",
+situation:"في دارة كهربائية: بطارية جهدها 12 V، مقاومتها الداخلية r=1 Ω، مقاومتان خارجيتان في التوالي R₁=3 Ω وR₂=5 Ω، وجهاز قياس (أميتر) مقاومته صفر.",
+info:"📌 في التوالي: R_كلي = R₁ + R₂ + r (كل المقاومات)\nشدة التيار: I = U ÷ R_كلي\nالأميتر مقاومته صفر → لا يؤثر على الحساب",
+question:"أي معادلة صحيحة لشدة التيار؟",
+type:"mcq",options:["I = 12 ÷ (3+5+1) = 1.33 A","I = 12 ÷ (3+5) = 1.5 A","I = 12 ÷ (3+5+1+0) = 1.33 A","I = 12 × (3+5+1) = 108 A"],answer:0,
+hint:"r تدخل في الحساب. الأميتر (صفر) لا يغير النتيجة.",
+explanation:"R_كلي = 9 Ω. I = 12÷9 = 1.33 A. إضافة صفر (الأميتر) لا تغير المجموع. لكن r=1 Ω تغير النتيجة وكثيراً ما تُنسى."},
+
+// ── كيمياء ──
+{id:45,level:2,domain:"كيمياء",
+situation:"تفاعل: 2H₂ + O₂ → 2H₂O\nلديك: 6 مول H₂ و 2 مول O₂. الكتلة المولية للماء 18 غ/مول.",
+info:"📌 المادة المحدِّدة هي التي تنتهي أولاً\n6 مول H₂ يحتاج: 6÷2 × 1 = 3 مول O₂\nلكن عندنا 2 مول O₂ فقط → O₂ هي المحدِّدة\nمن 2 مول O₂ ننتج: 2×2 = 4 مول H₂O",
+question:"كم مول ماء ينتج فعلاً؟",
+type:"mcq",options:["4 مول (O₂ هي المحدِّدة)","6 مول (H₂ هي المحدِّدة)","8 مول (مجموع المولات)","3 مول (متوسط المولات)"],answer:0,
+hint:"أي مادة ستنتهي أولاً؟ تلك هي المحدِّدة.",
+explanation:"6 مول H₂ تحتاج 3 مول O₂، لكن عندنا 2 فقط. إذن O₂ تنتهي أولاً. من 2 مول O₂ ننتج 4 مول H₂O. H₂ المتبقية = 6−4 = 2 مول غير متفاعلة."},
+
+{id:46,level:2,domain:"كيمياء",
+situation:"جرعة دواء: الطبيب وصف 500 مغ من الدواء. عندك أقراص تركيزها 250 مغ/قرص، وشراب تركيزه 125 مغ/5مل. سعر القرص 50 دج وسعر الشراب 80 دج للعبوة.",
+info:"📌 عدد الأقراص = الجرعة المطلوبة ÷ تركيز القرص\nحجم الشراب = الجرعة ÷ التركيز (مع تحويل الوحدات)\nالسعر لا يدخل في حساب الجرعة",
+question:"كم قرصاً أو كم مل شراب تحتاجين لجرعة 500 مغ؟",
+type:"mcq",options:["2 قرص أو 20 مل شراب","1 قرص أو 10 مل شراب","4 أقراص أو 40 مل شراب","2 قرص أو 10 مل شراب"],answer:0,
+hint:"أقراص = 500÷250. شراب: 125مغ/5مل → كم مل لـ 500 مغ؟",
+explanation:"أقراص = 500÷250 = 2 قرص. شراب: 125مغ في 5مل → 500مغ في 5×4 = 20 مل. السعر معلومة لا تدخل في حساب الجرعة."},
+
+// ── رياضيات ──
+{id:47,level:2,domain:"رياضيات",
+situation:"طالبة درجاتها: عربية 14 (معامل 3)، رياضيات 16 (معامل 4)، فيزياء 15 (معامل 3)، تاريخ 12 (معامل 2)، رسم 18 (معامل 1). تريد معدلها الموزون.",
+info:"📌 المعدل الموزون = مجموع (الدرجة × المعامل) ÷ مجموع المعاملات\nالمعدل البسيط (÷5) يعطي نتيجة مختلفة وغير دقيقة",
+question:"أي معادلة صحيحة للمعدل الموزون؟",
+type:"mcq",options:["M = (14×3+16×4+15×3+12×2+18×1) ÷ (3+4+3+2+1)","M = (14+16+15+12+18) ÷ 5","M = (14×3+16×4+15×3+12×2+18×1) ÷ 5","M = أعلى درجة + أدنى درجة ÷ 2"],answer:0,
+hint:"المعدل الموزون: نقسم على مجموع المعاملات لا على عدد المواد.",
+explanation:"البسط = 42+64+45+24+18 = 193. المقام = 13. M = 193÷13 = 14.85. المعدل البسيط = 75÷5 = 15 — وهو مختلف لأنه يعطي الرسم نفس وزن الرياضيات!"},
+
+{id:48,level:2,domain:"رياضيات",
+situation:"رميتِ حجر نرد مرتين. تريدين حساب احتمال الحصول على مجموع = 7. عدد الأوجه = 6. الأزواج الممكنة = 36.",
+info:"📌 الاحتمال = عدد الحالات المواتية ÷ عدد الحالات الممكنة الكلية\nأزواج تعطي مجموع 7: (1,6)(2,5)(3,4)(4,3)(5,2)(6,1) = 6 أزواج",
+question:"ما احتمال الحصول على مجموع = 7؟",
+type:"mcq",options:["6/36 = 1/6 ≈ 16.7%","7/36 ≈ 19.4%","1/6 × 1/6 = 1/36","6/6 = 100%"],answer:0,
+hint:"عدد الأزواج التي تعطي 7 = 6. المجموع الكلي = 36.",
+explanation:"P(7) = 6÷36 = 1/6. المجموع 7 هو الأكثر احتمالاً في رمي نردين! هذا ليس صدفة — العدد 7 يمكن تكوينه بأكبر عدد من الطرق."},
+
+// ── منطق ──
+{id:49,level:2,domain:"منطق",
+situation:"إعلان: 'دراسة أثبتت أن من يشربون قهوة يعيشون أطول!' قرأتِ الدراسة فوجدتِ أنها قارنت 200 شخص يشربون قهوة بـ 200 لا يشربون — لكن الفريق الأول كان أغنى وأكثر ممارسة للرياضة.",
+info:"📌 الارتباط ≠ السببية\nوجود علاقة بين A وB لا يعني أن A يسبب B\nقد يكون هناك متغير ثالث (C) يؤثر على كليهما",
+question:"ما المشكلة الجوهرية في هذه الدراسة؟",
+type:"mcq",options:["الغنى والرياضة (لا القهوة) قد تفسران طول العمر","حجم العينة صغير جداً (200 شخص)","الدراسة كاذبة تماماً","القهوة فعلاً تطيل العمر إذن الدراسة صحيحة"],answer:0,
+hint:"هل تأكدت الدراسة أن المجموعتين متساويتان في كل شيء ما عدا القهوة؟",
+explanation:"الفريق الشارب للقهوة أغنى وأكثر رياضة — وكلاهما يطيل العمر مستقلاً عن القهوة. هذا يُسمى 'متغير مربك'. الدراسة تثبت ارتباطاً لا سببية."},
+
+{id:50,level:2,domain:"منطق",
+situation:"متجر يعلن خصم 50% على منتج، ثم خصم 50% إضافي على السعر الجديد. كثير من الناس يظنون أن المجموع = خصم 100% (مجاني).",
+info:"📌 الخصومات المتتالية لا تُجمع!\nالخصم الثاني يُطبَّق على السعر الجديد (المخفَّض) لا على الأصلي\nالمعادلة الصحيحة: السعر النهائي = P × (1−r₁) × (1−r₂)",
+question:"إذا كان السعر الأصلي 1000 دج، ما السعر النهائي بعد خصمين 50%؟",
+type:"mcq",options:["250 دج (لا 0 دج)","0 دج (خصم 100%)","500 دج (خصم 50% فقط)","750 دج (خصم 25%)"],answer:0,
+hint:"الخصم الثاني على السعر بعد الأول، لا على الأصلي.",
+explanation:"بعد الخصم الأول: 1000×0.5 = 500 دج. بعد الخصم الثاني: 500×0.5 = 250 دج. الخصم الفعلي = 75% وليس 100%. المعادلة: 1000×0.5×0.5 = 250."},
+
+// ════════ المرحلة ج — معادلة مركّبة ════════
+
+// ── اقتصاد ──
+{id:51,level:2,domain:"اقتصاد",
+situation:"مشروع عصائر: P=60 دج، cv=25 دج، CF=9,500 دج/شهر. تريدين إيجاد عتبة المردودية بالقيمة (بالدينار) في معادلة مركّبة واحدة.",
+info:"📌 SR = CF × P ÷ (P − cv)\nأو بالتفصيل: m=P−cv ثم t=m÷P ثم SR=CF÷t\nكلاهما يعطي نفس النتيجة",
+question:"أي معادلة مركّبة صحيحة مباشرة؟",
+type:"mcq",options:["SR = 9500×60÷(60−25) = 16,286 دج","SR = 9500÷60 = 158 دج","SR = 9500×(60+25) = 807,500 دج","SR = (9500+60)÷25 = 382.4 دج"],answer:0,
+hint:"SR = CF×P÷m = CF×P÷(P−cv)",
+explanation:"m=35. t=35÷60=58.3%. SR=9500÷0.583=16,286 دج. أو مباشرة: 9500×60÷35=16,286 دج. يجب بيع ما يعادل 16,286 دج شهرياً لتغطية الأجرة والفواتير."},
+
+{id:52,level:2,domain:"اقتصاد",
+situation:"مشروعك: P=60 دج، cv=25 دج، CF=9,500 دج. هذا الشهر بعتِ 320 كوباً. تريدين حساب نتيجة الاستغلال في خطوتين مدمجتين.",
+info:"📌 R = (P−cv)×Q − CF\nأو: R = m×Q − CF\nمنطق: الهامش الكلي ناقص التكاليف الثابتة",
+question:"أي معادلة مركّبة صحيحة؟",
+type:"mcq",options:["R = (60−25)×320 − 9500 = 1,700 دج ربح","R = 60×320 − 9500 = 9,700 دج","R = (60−25)×320 + 9500 = 20,700 دج","R = 60×320 − 25 − 9500 = 9,675 دج"],answer:0,
+hint:"R = هامش الكوب × الكمية − التكاليف الثابتة",
+explanation:"R = 35×320−9500 = 11200−9500 = 1,700 دج. ربح بسيط! لو باعت 270 كوباً فقط: R = 35×270−9500 = −25 دج خسارة طفيفة."},
+
+// ── فيزياء ──
+{id:53,level:2,domain:"فيزياء",
+situation:"جسم كتلته 4 كغ يتحرك بسرعة 10 م/ث. تريدين حساب القوة اللازمة لإيقافه خلال مسافة 5 م في معادلة مركّبة.",
+info:"📌 الخطوة 1: الطاقة الحركية: Ec = ½mv²\nالخطوة 2: مبدأ الشغل-الطاقة: F×d = Ec\nإذن: F = (½mv²) ÷ d",
+question:"أي معادلة مركّبة صحيحة؟",
+type:"mcq",options:["F = (½×4×100) ÷ 5 = 40 N","F = 4×10 ÷ 5 = 8 N","F = ½×4×10 ÷ 5 = 4 N","F = 4×100 ÷ 5 = 80 N"],answer:0,
+hint:"Ec = ½×m×v² (v مربّعة!). ثم F = Ec÷d.",
+explanation:"Ec = ½×4×100 = 200 ج. F = 200÷5 = 40 N. الخطأ الشائع: نسيان تربيع السرعة → ½×4×10=20 بدل 200."},
+
+{id:54,level:2,domain:"فيزياء",
+situation:"مضخة قدرتها 800 W ترفع ماءً إلى ارتفاع 10 م. تريدين حساب كتلة الماء التي ترفعها كل ثانية. g=10 م/ث².",
+info:"📌 القدرة = الشغل ÷ الزمن = (m×g×h) ÷ t\nلكل ثانية: P = m×g×h ÷ 1\nإذن: m = P ÷ (g×h)",
+question:"أي معادلة مركّبة صحيحة؟",
+type:"mcq",options:["m = 800 ÷ (10×10) = 8 كغ/ث","m = 800 × 10 × 10 = 80,000 كغ/ث","m = 800 ÷ 10 = 80 كغ/ث","m = 800 × (10+10) = 16,000 كغ/ث"],answer:0,
+hint:"P = m×g×h÷t. لكل ثانية: m = P÷(g×h).",
+explanation:"m = 800÷(10×10) = 8 كغ في كل ثانية. أي هذه المضخة ترفع 8 لترات من الماء كل ثانية (لأن 1 لتر ماء ≈ 1 كغ)."},
+
+// ── كيمياء ──
+{id:55,level:2,domain:"كيمياء",
+situation:"تريدين تحضير 1 لتر من محلول NaCl تركيزه 0.5 mol/L انطلاقاً من محلول مركّز تركيزه 4 mol/L. كم مل تأخذين من المركّز؟",
+info:"📌 قانون التخفيف: C₁×V₁ = C₂×V₂\nV₁ = (C₂×V₂) ÷ C₁\nثم تُكمَّل بالماء حتى الحجم النهائي",
+question:"أي معادلة مركّبة صحيحة؟",
+type:"mcq",options:["V₁ = (0.5×1000) ÷ 4 = 125 مل","V₁ = (4×1000) ÷ 0.5 = 8000 مل","V₁ = 0.5×4 = 2 مل","V₁ = 1000 ÷ (4+0.5) = 222 مل"],answer:0,
+hint:"C₁V₁ = C₂V₂ → V₁ = C₂×V₂÷C₁. V₂ = 1000 مل.",
+explanation:"V₁ = (0.5×1000)÷4 = 125 مل. تأخذين 125 مل من المركّز وتضيفين ماءً حتى يصل الحجم إلى 1000 مل."},
+
+{id:56,level:2,domain:"كيمياء",
+situation:"حمض HCl (M=36.5 غ/مول) تركيزه 2 mol/L. تريدين إيجاد كتلة HCl في 500 مل من هذا المحلول.",
+info:"📌 الخطوة 1: عدد المولات = C × V(L)\nالخطوة 2: الكتلة = n × M",
+question:"أي معادلة مركّبة صحيحة مباشرة؟",
+type:"mcq",options:["m = C×V×M = 2×0.5×36.5 = 36.5 غ","m = C×M = 2×36.5 = 73 غ","m = V×M = 0.5×36.5 = 18.25 غ","m = C÷V×M = 2÷0.5×36.5 = 146 غ"],answer:0,
+hint:"n = C×V(L). ثم m = n×M. دمجهما: m = C×V×M.",
+explanation:"n = 2×0.5 = 1 مول. m = 1×36.5 = 36.5 غ. المعادلة المدمجة: m = C×V×M."},
+
+// ── رياضيات ──
+{id:57,level:2,domain:"رياضيات",
+situation:"مزرعة أسماك فيها 20,000 سمكة، تتكاثر بمعدل نمو مركّب 8% سنوياً. تريدين معرفة بعد كم سنة يتضاعف العدد (أي يصبح 40,000 سمكة). تقريب: استعملي قاعدة 72.",
+info:"📌 قاعدة 72 (تقريبية وذكية): عدد السنوات للتضاعف ≈ 72 ÷ معدل النمو%\nهذه قاعدة عملية يستخدمها الباحثون في النمو السكاني والبيولوجي دون حسابات معقدة",
+question:"بعد كم سنة تقريباً يتضاعف عدد الأسماك؟",
+type:"mcq",options:["72÷8 = 9 سنوات تقريباً","8×72 = 576 سنة","72−8 = 64 سنة","72+8 = 80 سنة"],answer:0,
+hint:"قاعدة 72: سنوات التضاعف ≈ 72 ÷ معدل النمو.",
+explanation:"72÷8 = 9 سنوات. الجواب الدقيق: 20000×(1.08)⁹ = 39,960 ≈ 40,000 سمكة. قاعدة 72 تقريب ذكي جداً! احفظيها: تضاعف أي كمية متناسبة = 72 ÷ معدل النمو."},
+
+{id:58,level:2,domain:"رياضيات",
+situation:"مدينة عدد سكانها 500,000 نسمة ينمو بمعدل 3% سنوياً. مدينة أخرى عدد سكانها 800,000 تنمو بـ 1% سنوياً. بعد كم سنة تقريباً تتساوى المدينتان؟",
+info:"📌 المعادلة: 500000×(1.03)ⁿ = 800000×(1.01)ⁿ\nهذا يحتاج لوغاريتم. لكن يمكن التقدير:\nكل 10 سنوات: المدينة أ تنمو ≈34%، المدينة ب ≈10.5%",
+question:"أي تقدير صحيح لعدد السنوات؟",
+type:"mcq",options:["بين 25 و 35 سنة","أقل من 10 سنوات","أكثر من 100 سنة","لن تتساويا أبداً"],answer:0,
+hint:"الفرق الحالي 300,000. المدينة أ تنمو أسرع بفارق 2%. كم تحتاج لتقليص الفجوة؟",
+explanation:"الجواب الدقيق ≈ 29 سنة. المنطق: الفارق 2% سنوياً في النمو يحتاج وقتاً طويلاً لسد فجوة 300,000. النمو الأسي يبدو بطيئاً ثم يتسارع فجأة."},
+
+// ── منطق ──
+{id:59,level:2,domain:"منطق",
+situation:"ثلاثة متاجر تعلن عروضاً على نفس المنتج سعره الأصلي 1000 دج:\n• متجر أ: خصم 30% ثم خصم 20%\n• متجر ب: خصم 20% ثم خصم 30%\n• متجر ج: خصم 50% مرة واحدة",
+info:"📌 الخصومات المتتالية: السعر النهائي = P×(1−r₁)×(1−r₂)\nلاحظي: (1−r₁)×(1−r₂) = (1−r₂)×(1−r₁)\nالترتيب لا يهم! لكن الخصم المرّكب ≠ مجموع الخصمين",
+question:"ما ترتيب الأسعار النهائية من الأرخص للأغلى؟",
+type:"mcq",options:["ج (500) أرخص، ثم أ وب متساويان (560)","أ (500) < ب (560) < ج (600)","أ = ب = ج (كلها 500)","ج (500) < أ (560) < ب (600)"],answer:0,
+hint:"احسبي كل سعر: أ وب = 1000×0.7×0.8. ج = 1000×0.5.",
+explanation:"أ وب = 1000×0.7×0.8 = 560 دج (الترتيب لا يهم!). ج = 1000×0.5 = 500 دج. إذن ج أرخص. خصم 30%+20% لا يساوي خصم 50% — يساوي خصم 44% فعلياً."},
+
+{id:60,level:2,domain:"منطق",
+situation:"اختبار طبي لاكتشاف مرض نادر (1 من كل 1000 شخص مريض). دقة الاختبار 99%. جاءت نتيجتك إيجابية. ما احتمال أنك مريضة فعلاً؟",
+info:"📌 هذه من أشهر المغالطات الإحصائية!\nمن 100,000 شخص: 100 مرضى حقيقيون، 99 منهم سيظهر إيجابياً\nمن 99,900 أصحاء: 1% = 999 سيظهرون إيجابياً خطأً\nاحتمال أنك مريضة = 99÷(99+999)",
+question:"ما الاحتمال التقريبي أنك مريضة فعلاً رغم النتيجة الإيجابية؟",
+type:"mcq",options:["≈ 9% فقط (وليس 99%)","99% (دقة الاختبار)","50%","1% (نادر جداً)"],answer:0,
+hint:"احسبي: كم شخصاً إيجابياً من 100,000؟ كم منهم مرضى حقاً؟",
+explanation:"من 100,000: 99 مريضاً حقيقياً إيجابياً + 999 صحيحاً إيجابياً خطأً = 1,098 إيجابياً. احتمال المرض = 99÷1098 ≈ 9%. هذا يُسمى 'مفارقة الاختبار' — لهذا الأطباء لا يعتمدون على اختبار واحد!"},
+
+// ─────────── LEVEL 3 ───────────
+// ══════════════════════════════════════════════════════════
+//  LEVEL 3 — علاقات مركّبة ومسارات متعددة الخطوات
+//  المرحلة أ (61-70): مسار واضح لكن متعدد الخطوات
+//  المرحلة ب (71-80): الخطوة الأولى غير واضحة مباشرة
+//  المرحلة ج (81-90): تفكير نقدي وسياق مركّب
+// ══════════════════════════════════════════════════════════
+
+// ════════ المرحلة أ ════════
+
+{id:61,level:3,domain:"اقتصاد",
+situation:"تريدين فتح مشروع بيع حلويات منزلية:\n• سعر علبة الحلوى = 350 دج\n• تكلفة مواد العلبة = 140 دج\n• أجرة + فواتير شهرية = 42,000 دج\nتريدين معرفة كم علبة تبيعين شهرياً لتحقيق ربح 14,000 دج.",
+info:"📌 المسار:\n1) هامش الوحدة: m = P − cv\n2) الكمية اللازمة: Q = (CF + ربح مستهدف) ÷ m\nمنطق: الهامش الكلي يجب أن يغطي CF + الربح معاً",
+question:"ما الخطوة الأولى التي لا يمكن تخطّيها؟",
+type:"mcq",options:["م = P − cv = 350 − 140 = 210 دج","Q = 42000 ÷ 350 = 120 علبة مباشرة","Q = (42000+14000) ÷ 350 = 160 علبة","الربح = 350×Q − 42000 مباشرة"],answer:0,
+hint:"قبل أي شيء: كم تكسبين من كل علبة؟",
+explanation:"1) م = 210 دج/علبة. 2) Q = (42000+14000)÷210 = 266 علبة. الخطأ الشائع: القسمة على السعر (350) بدل الهامش (210)."},
+
+{id:62,level:3,domain:"اقتصاد",
+situation:"بائعة ملابس تريد مقارنة شهرين:\n• الشهر 1: باعت 80 قطعة بسعر 600 دج، cv=250 دج\n• الشهر 2: باعت 60 قطعة بسعر 750 دج، cv=250 دج\n• CF ثابتة = 18,000 دج/شهر\nأيهما أفضل ربحاً؟",
+info:"📌 R = (P−cv) × Q − CF\nيكفي حساب الهامش الكلي لكل شهر ومقارنته",
+question:"ما الطريقة الأذكى للمقارنة السريعة؟",
+type:"mcq",options:["مقارنة الهامش الكلي: شهر1=350×80=28,000 مقابل شهر2=500×60=30,000","مقارنة رقم الأعمال: 80×600=48,000 مقابل 60×750=45,000","مقارنة السعر فقط: 600 مقابل 750","مقارنة الكمية فقط: 80 مقابل 60"],answer:0,
+hint:"الربح يعتمد على الهامش الكلي لا على رقم الأعمال وحده.",
+explanation:"شهر1: R=28,000−18,000=10,000. شهر2: R=30,000−18,000=12,000. الشهر2 أفضل رغم مبيعات أقل! السر: الهامش الأعلى (500 بدل 350) عوّض الكمية الأقل."},
+
+{id:63,level:3,domain:"فيزياء",
+situation:"سيارة تسير بـ 108 كم/سا على طريق سريع. رأت حاجزاً فجأة على بعد 80 م وفرملت بتباطؤ 6 م/ث².\nهل تتوقف قبل الحاجز؟",
+info:"📌 المسار:\n1) تحويل السرعة: v = 108÷3.6 = 30 م/ث\n2) مسافة الفرملة: d = v²÷(2a)\n3) مقارنة d مع 80 م",
+question:"ما الخطوة الأولى الضرورية قبل أي حساب؟",
+type:"mcq",options:["تحويل السرعة: 108÷3.6 = 30 م/ث","حساب مسافة الفرملة: 108²÷12 مباشرة","مقارنة 108 مع 80","حساب الزمن: 108÷6 = 18"],answer:0,
+hint:"المعادلات تعمل بـ م/ث، ليس كم/سا.",
+explanation:"v=30 م/ث. d=900÷12=75 م < 80 م. السيارة تتوقف قبل الحاجز بـ 5 أمتار فقط! البدء بـ 108² خطأ لأن الوحدة غير صحيحة."},
+
+{id:64,level:3,domain:"فيزياء",
+situation:"مصعد يرفع حمولة 500 كغ إلى الطابق العاشر (ارتفاع 30 م) في 20 ثانية. g=10 م/ث².\nتريدين حساب القدرة الكهربائية المطلوبة إذا كان مردود المصعد 80%.",
+info:"📌 المسار:\n1) الشغل المفيد = m×g×h\n2) القدرة المفيدة = W÷t\n3) القدرة الكهربائية = P_مفيدة ÷ المردود",
+question:"من أين تبدئين؟",
+type:"mcq",options:["الشغل المفيد = 500×10×30 = 150,000 ج","القدرة الكهربائية مباشرة = 500×10×30÷20÷0.8","المردود × الكتلة = 0.8×500","الزمن × g = 20×10"],answer:0,
+hint:"القدرة تحتاج الشغل. الشغل يحتاج m×g×h.",
+explanation:"W=150,000 ج. P_مفيدة=150,000÷20=7,500 واط. P_كهربائية=7,500÷0.8=9,375 واط. بدون المردود سنُقلّل الحساب بـ 20%."},
+
+{id:65,level:3,domain:"كيمياء",
+situation:"تريدين تحضير 2 لتر من محلول مطهّر تركيزه 0.1 mol/L من مادة كلورامين (M=227 غ/مول).\nكم غراماً من المادة تحتاجين؟",
+info:"📌 المسار:\n1) عدد المولات = C × V(L)\n2) الكتلة = n × M",
+question:"ما الخطوة الأولى؟",
+type:"mcq",options:["n = C×V = 0.1×2 = 0.2 مول","الكتلة مباشرة = 0.1×2×227","الحجم بالمل = 2×1000 أولاً","تركيز÷كتلة مولية = 0.1÷227"],answer:0,
+hint:"الكتلة تحتاج n. وn = C×V.",
+explanation:"n=0.2 مول. الكتلة=0.2×227=45.4 غ. المسار دائماً: C وV → n → كتلة."},
+
+{id:66,level:3,domain:"كيمياء",
+situation:"طبيب يصف للمريض محلول مغذٍّ وريدي: 500 مل من سيروم فيزيولوجي (NaCl 0.9% w/v).\nكم غ من NaCl (M=58.5 غ/مول) يحتوي الكيس؟ وكم مول؟",
+info:"📌 النسبة w/v: 0.9% تعني 0.9 غ في كل 100 مل\nإذن: كتلة NaCl = (0.9÷100) × الحجم بالمل\nثم: n = m÷M",
+question:"ما الخطوة الأولى؟",
+type:"mcq",options:["كتلة NaCl = 0.9÷100 × 500 = 4.5 غ","n مباشرة = 0.9÷58.5","التركيز المولي = 0.9×1000÷58.5÷100","الحجم بالليتر = 500÷1000 أولاً"],answer:0,
+hint:"0.9% w/v تعني 0.9 غ لكل 100 مل. ابدئي بحساب الكتلة.",
+explanation:"كتلة=4.5 غ. n=4.5÷58.5=0.077 مول. هذا هو سبب استخدام 'سيروم فيزيولوجي' في الطب: تركيزه يتوافق مع تركيز ملح الدم الطبيعي."},
+
+{id:67,level:3,domain:"رياضيات",
+situation:"مستعمرة بكتيريا تحتوي 30,000 خلية، تتضاعف بمعدل نمو مركّب 9% كل ساعة. تريدين معرفة متى يتجاوز عددها 50,000 خلية.\n(1.09⁶≈1.677، 1.09⁷≈1.828، 1.09⁸≈1.993)",
+info:"📌 نريد: 30,000×(1.09)ⁿ > 50,000\nأي: (1.09)ⁿ > 50,000÷30,000 = 1.667\nنبحث عن أصغر n يحقق هذا",
+question:"بعد كم ساعة يتجاوز عدد الخلايا 50,000؟",
+type:"mcq",options:["بعد 6 ساعات: 30,000×1.677=50,310 > 50,000 ✓","بعد 7 ساعات (الأكيد أكثر)","بعد 5 ساعات (قاعدة 72: 72÷9=8)","لا يمكن التحديد بدون لوغاريتم"],answer:0,
+hint:"ابحثي عن أول n تكون فيه (1.09)ⁿ > 1.667.",
+explanation:"(1.09)⁶=1.677 > 1.667 → بعد 6 ساعات بالضبط. قاعدة 72 تعطي 8 ساعات للتضاعف، لكن هنا نريد ×1.667 (أقل من ضعف) → نصل قبل 8 ساعات."},
+
+{id:68,level:3,domain:"رياضيات",
+situation:"متجر يعرض سلعة بـ 2,000 دج. صديقتك تقول 'أنا أشتريها بعد خصم 30% ثم خصم 20% إضافي'. أنت تقولين 'هذا يساوي خصم 50%'. من المحق؟",
+info:"📌 خصم 30% ثم 20%:\nالسعر النهائي = 2000 × 0.70 × 0.80\nالخصم الفعلي = 1 − (0.70×0.80) = 1 − 0.56 = 44%\nالخصومات المتتالية لا تُجمع!",
+question:"ما السعر النهائي الصحيح؟",
+type:"mcq",options:["2000 × 0.70 × 0.80 = 1,120 دج (خصم 44%)","2000 × 0.50 = 1,000 دج (خصم 50%)","2000 − 600 − 400 = 1,000 دج","2000 × 0.70 − 20% = 1,120 دج"],answer:0,
+hint:"الخصم الثاني يُطبَّق على السعر المخفَّض، لا على الأصلي.",
+explanation:"1,400 × 0.80 = 1,120 دج. الخصم الفعلي = 880÷2000×100 = 44%، وليس 50%. صديقتك مخطئة — الخصومات تُضرب لا تُجمع."},
+
+{id:69,level:3,domain:"منطق",
+situation:"إعلان: 'دراستنا أثبتت أن 8 من كل 10 أطباء ينصحون بمنتجنا'. عندما طلبتِ تفاصيل الدراسة وجدتِ: سألوا 10 أطباء فقط في مدينة واحدة، وعرضوا عليهم هدايا مقابل الإجابة.",
+info:"📌 مشاكل هذه الدراسة:\n1) العينة صغيرة جداً (10 أطباء)\n2) العينة غير ممثِّلة (مدينة واحدة)\n3) تحيّز: الهدايا تؤثر على الإجابات",
+question:"ما المشكلة الأخطر في هذه الدراسة؟",
+type:"mcq",options:["التحيّز: الهدايا تجعل الإجابات غير موثوقة","حجم العينة صغير فقط","المدينة الواحدة فقط","الدراسة كاذبة تماماً"],answer:0,
+hint:"حتى لو كانت العينة كبيرة — هل الهدايا تؤثر على الإجابات؟",
+explanation:"التحيّز هو الأخطر لأنه يُفسد النتائج حتى مع عينة كبيرة. إذا أجبت الأطباء بسبب الهدية لا بسبب قناعتهم، فالنتيجة لا قيمة لها بغض النظر عن الحجم."},
+
+{id:70,level:3,domain:"منطق",
+situation:"إحصاء: 'معدل دخل سكان حي راقٍ = 85,000 دج/شهر'. عندما فحصتِ البيانات وجدتِ: 95 شخصاً يكسبون 20,000 دج، و5 أشخاص يكسبون 1,300,000 دج.",
+info:"📌 المتوسط الحسابي:\nالمجموع = (95×20,000)+(5×1,300,000) = 8,400,000\nالمتوسط = 8,400,000÷100 = 84,000 ≈ 85,000 ✓\nلكن 95% من السكان يكسبون 20,000 فقط!",
+question:"ما المشكلة في استخدام المتوسط هنا؟",
+type:"mcq",options:["القيم الشاذة الـ5 تشوّه المتوسط ويُضلّل عن الواقع","المتوسط خاطئ رياضياً","يجب استخدام النسبة المئوية","العينة صغيرة جداً"],answer:0,
+hint:"ما الرقم الذي يمثل الشخص العادي في هذا الحي؟",
+explanation:"المتوسط 85,000 صحيح رياضياً لكنه مضلِّل. الوسيط = 20,000 دج (يمثل 95% من السكان). 5 أثرياء رفعوا المتوسط 4 أضعاف. لهذا يستخدم الاقتصاديون الوسيط لقياس دخل 'الشخص العادي'."},
+
+// ════════ المرحلة ب ════════
+
+{id:71,level:3,domain:"اقتصاد",
+situation:"محل أحذية: سعر الحذاء 2,400 دج، cv=900 دج، CF=90,000 دج/شهر.\nرقم الأعمال هذا الشهر = 192,000 دج.\nصاحبة المحل قالت: 'ربحي = 192,000 − 90,000 = 102,000 دج'. هل هي محقة؟",
+info:"📌 الربح الحقيقي:\nQ = CA÷P (لاستخراج الكمية)\nR = (P−cv)×Q − CF\nأو: R = CA − (CF + cv×Q)",
+question:"ما الخطأ وما الخطوة الأولى لإصلاحه؟",
+type:"mcq",options:["نسيت CV → نستخرج Q أولاً: Q = 192,000÷2,400 = 80 حذاء","الحساب صحيح تماماً","تطرح cv من السعر فقط","تضرب CF في عدد الأحذية"],answer:0,
+hint:"هل طُرحت تكاليف المواد (cv × الكمية)؟",
+explanation:"Q=80. CV=900×80=72,000. R=192,000−90,000−72,000=30,000 دج. وليس 102,000! صاحبة المحل نسيت تكلفة شراء الأحذية نفسها."},
+
+{id:72,level:3,domain:"اقتصاد",
+situation:"خياطة تبيع فستاناً بـ 3,000 دج. منافسة جديدة أجبرتها على تخفيض السعر 20%.\nتكلفة المواد لكل فستان 1,200 دج. CF = 36,000 دج/شهر.\nكيف تغيرت عتبة المردودية؟",
+info:"📌 SR_قديم = CF÷(P_قديم−cv)\nSR_جديد = CF÷(P_جديد−cv)\nP_جديد = P_قديم×(1−0.20)",
+question:"ما الخطوة الأولى لحساب SR الجديد؟",
+type:"mcq",options:["P_جديد = 3000×0.80 = 2,400 دج","SR_جديد = SR_قديم×1.20","م_جديد = 3000×0.80−1200","CF÷0.20 مباشرة"],answer:0,
+hint:"أولاً: ما هو السعر الجديد؟",
+explanation:"P_جديد=2,400. م_جديد=1,200 (بدل 1,800). SR_قديم=36,000÷1,800=20 فستان. SR_جديد=36,000÷1,200=30 فستان. تخفيض 20% في السعر رفع عتبة المردودية 50%!"},
+
+{id:73,level:3,domain:"فيزياء",
+situation:"لوح شمسي 400 واط على سطح منزل. يعمل فعلياً 5 ساعات/يوم. تكلفة التركيب 72,000 دج. الفاتورة الكهربائية قبله 2,400 دج/شهر. سعر kWh من الشبكة = 8 دج.",
+info:"📌 لحساب فترة الاسترداد:\n1) الطاقة الشهرية = P(kW) × ساعات × 30\n2) التوفير الشهري = الطاقة × سعر kWh\n3) فترة الاسترداد = تكلفة التركيب ÷ التوفير الشهري",
+question:"ما الخطوة غير المباشرة التي يجب اكتشافها أولاً؟",
+type:"mcq",options:["الطاقة الشهرية = 0.4×5×30 = 60 kWh، ثم التوفير = 60×8 = 480 دج/شهر","فترة الاسترداد = 72,000÷2,400 = 30 شهراً مباشرة","التوفير = الفاتورة القديمة كاملة = 2,400 دج/شهر","التكلفة ÷ القدرة = 72,000÷400"],answer:0,
+hint:"اللوح لا يلغي الفاتورة كاملاً — يلغي فقط ما ينتجه فعلياً.",
+explanation:"التوفير الفعلي = 480 دج/شهر (ليس 2,400). فترة الاسترداد = 72,000÷480 = 150 شهر = 12.5 سنة. لكن عمر اللوح 25 سنة → التوفير الإجمالي = 480×300=144,000 دج > 72,000 → مجدٍ."},
+
+{id:74,level:3,domain:"فيزياء",
+situation:"قطار يسير بـ 72 كم/سا يصطدم بعائق. قوة الاصطدام = m×a. كتلة القطار 50,000 كغ. تباطأ من 72 كم/سا إلى الصفر في 3 ثواني.",
+info:"📌 المسار:\n1) تحويل: v = 72÷3.6 = 20 م/ث\n2) التباطؤ: a = Δv÷t = 20÷3\n3) القوة: F = m×a",
+question:"ما الخطوة الأولى غير الواضحة هنا؟",
+type:"mcq",options:["تحويل السرعة: 72÷3.6 = 20 م/ث","F = m×v = 50,000×72 مباشرة","a = 72÷3 = 24 م/ث²","F = 50,000×3 = 150,000 N"],answer:0,
+hint:"72 كم/سا لا تدخل في F=ma مباشرة. يجب التحويل أولاً.",
+explanation:"v=20 م/ث. a=20÷3=6.67 م/ث². F=50,000×6.67=333,500 N. هذه القوة الضخمة تفسر لماذا الاصطدامات بالسرعات العالية مدمّرة جداً."},
+
+{id:75,level:3,domain:"كيمياء",
+situation:"عندك 100 مل من محلول HCl تركيزه 0.5 mol/L و150 مل من محلول NaOH تركيزه 0.3 mol/L.\nخلطتِ المحلولين. ما طبيعة الخليط النهائي (حمضي/قاعدي/متعادل)؟",
+info:"📌 المسار:\n1) n(HCl) = 0.5×0.1 = 0.05 مول\n2) n(NaOH) = 0.3×0.15 = 0.045 مول\n3) HCl + NaOH → NaCl + H₂O (نسبة 1:1)\n4) المادة الفائضة تحدد طبيعة الخليط",
+question:"ما الخطوة الأولى الضرورية؟",
+type:"mcq",options:["n(HCl) = 0.5×0.1 = 0.05 مول وn(NaOH) = 0.3×0.15 = 0.045 مول","مقارنة التركيزين: 0.5 > 0.3 → حمضي","مقارنة الحجمين: 150 > 100 → قاعدي","جمع التركيزين = 0.8 mol/L"],answer:0,
+hint:"لا نقارن التركيزات ولا الأحجام — نقارن المولات.",
+explanation:"n(HCl)=0.05 > n(NaOH)=0.045 → HCl فائضة بـ 0.005 مول → الخليط حمضي. خطأ شائع: مقارنة التركيزات مباشرة دون حساب المولات."},
+
+{id:76,level:3,domain:"كيمياء",
+situation:"تفاعل الاحتراق: C₃H₈ + 5O₂ → 3CO₂ + 4H₂O\nعندك 44 غ من البروبان C₃H₈ (M=44 غ/مول) و128 غ من O₂ (M=32 غ/مول).\nكم غ من CO₂ (M=44) تنتجين؟",
+info:"📌 المسار:\n1) n(C₃H₈) = 44÷44 = 1 مول\n2) n(O₂) = 128÷32 = 4 مول\n3) 1 مول C₃H₈ يحتاج 5 مول O₂ → O₂ غير كافية!\n4) 4 مول O₂ تتفاعل مع 4÷5=0.8 مول C₃H₈\n5) n(CO₂) = 0.8×3 = 2.4 مول",
+question:"ما المادة المحدِّدة وكم غ CO₂ تنتج؟",
+type:"mcq",options:["O₂ محدِّدة → CO₂ = 2.4×44 = 105.6 غ","C₃H₈ محدِّدة → CO₂ = 3×44 = 132 غ","كلاهما متساويان","CO₂ = 44+128 = 172 غ"],answer:0,
+hint:"1 مول C₃H₈ يحتاج 5 مول O₂. عندنا 4 فقط → O₂ تنتهي أولاً.",
+explanation:"O₂ محدِّدة. 4 مول O₂ → 4÷5=0.8 مول C₃H₈ → 0.8×3=2.4 مول CO₂ → 105.6 غ."},
+
+{id:77,level:3,domain:"رياضيات",
+situation:"ثلاثة صواريخ تتسابق:\n• صاروخ A: سرعة 1,000 م/ث، يبدأ من نقطة الانطلاق\n• صاروخ B: سرعة 800 م/ث، له تقدم 500 م\n• صاروخ C: سرعة 1,200 م/ث، يبدأ متأخراً 2 ثانية\nمن يصل أولاً لخط النهاية عند 5,000 م؟",
+info:"📌 الزمن = المسافة ÷ السرعة\nA: t = 5000÷1000 = 5 ث\nB: مسافته = 5000−500 = 4500 م → t = 4500÷800 = 5.625 ث\nC: t = 5000÷1200 + 2 = 4.17+2 = 6.17 ث",
+question:"أيها يصل أولاً؟",
+type:"mcq",options:["A يصل أولاً في 5 ثواني","B رغم سرعته الأقل يصل أولاً (5.625 ث)","C الأسرع يصل أولاً","B وA يصلان معاً"],answer:0,
+hint:"احسبي الزمن الفعلي لكل صاروخ، مع الأخذ بعين الاعتبار المسبقية والتأخير.",
+explanation:"A=5 ث. B=5.625 ث. C=6.17 ث. A يفوز! التقدم لم يكفِ لـ B، والتأخير أضرّ C رغم سرعته الأعلى."},
+
+{id:78,level:3,domain:"رياضيات",
+situation:"في صندوق 5 كرات حمراء و3 زرقاء و2 خضراء.\nسحبتِ كرة واحدة دون نظر. ما احتمال أن تكون غير خضراء؟",
+info:"📌 الاحتمال التكميلي:\nP(غير خضراء) = 1 − P(خضراء)\nP(خضراء) = 2÷10 = 0.2\nإذن P(غير خضراء) = 0.8 = 80%\nأسرع من حساب P(حمراء)+P(زرقاء)",
+question:"ما أذكى طريقة للحساب؟",
+type:"mcq",options:["1 − P(خضراء) = 1−2/10 = 80%","P(حمراء)+P(زرقاء) = 5/10+3/10 = 80%","(5+3)÷10 = 80% (نفس النتيجة أيضاً)","كل الطرق السابقة صحيحة وتعطي نفس الجواب"],answer:3,
+hint:"كلها صحيحة — لكن أيها أذكى وأسرع؟",
+explanation:"كلها تعطي 80%. لكن الطريقة التكميلية (1−P(خضراء)) أسرع عندما نحسب 'ما عدا شيء واحد'. ستطبّقينها كثيراً في الاحتمالات."},
+
+{id:79,level:3,domain:"منطق",
+situation:"دواء جديد اختُبر على 1,000 مريض:\n• المجموعة أ (500 شخص أخذوا الدواء): 400 شفوا\n• المجموعة ب (500 شخص أخذوا وهماً): 350 شفوا\nالشركة تعلن: 'الدواء فعّال بنسبة 80%!'",
+info:"📌 الفعالية الحقيقية للدواء:\nلا تُقاس بنسبة الشفاء في المجموعة أ فقط\nبل بالفرق بين المجموعتين:\nفعالية = P(شفاء مع دواء) − P(شفاء بدون دواء)",
+question:"ما الفعالية الحقيقية للدواء؟",
+type:"mcq",options:["80%−70% = 10% (الفرق بين المجموعتين)","80% (نسبة الشفاء في مجموعة الدواء)","(80%+70%)÷2 = 75%","80%÷70% = 114%"],answer:0,
+hint:"المجموعة ب شفيت 70% بدون دواء! ما الفضل الحقيقي للدواء؟",
+explanation:"الفعالية الحقيقية = 80%−70% = 10% فقط. الشركة تُقدّم 80% وهو رقم مضلِّل لأنه لا يأخذ المجموعة الضابطة بعين الاعتبار. هذا هو سبب اشتراط التجارب المزدوجة العمياء في الطب."},
+
+{id:80,level:3,domain:"منطق",
+situation:"بلدان:\n• بلد A: 500 وفاة بسبب مرض معين من 10 مليون نسمة\n• بلد B: 200 وفاة من 2 مليون نسمة\nوزارة الصحة في بلد B تقول: 'نحن أفضل لأن وفياتنا أقل عدداً'.",
+info:"📌 المقارنة الصحيحة تكون بالمعدل النسبي:\nمعدل A = 500÷10,000,000 × 100,000 = 5 لكل 100,000\nمعدل B = 200÷2,000,000 × 100,000 = 10 لكل 100,000",
+question:"من يملك الأداء الأفضل فعلاً؟",
+type:"mcq",options:["بلد A أفضل: معدله 5 مقابل 10 لكل 100,000","بلد B أفضل كما تقول الوزارة","متساويان","لا يمكن المقارنة بدون بيانات إضافية"],answer:0,
+hint:"قارني بالمعدل النسبي لا بالعدد المطلق.",
+explanation:"بلد A: 5 وفاة لكل 100,000. بلد B: 10 وفاة لكل 100,000. بلد A أفضل ضعف. وزارة B تستخدم الأرقام المطلقة لتضليل الرأي العام. العبرة: دائماً احسبي 'لكل كذا ألف' عند المقارنة بين مجموعات مختلفة الحجم."},
+
+// ════════ المرحلة ج ════════
+
+{id:81,level:3,domain:"اقتصاد",
+situation:"ورشة نجارة:\n• كرسي: P=1,800 دج، cv=700 دج، تُباع 40/شهر\n• طاولة: P=4,500 دج، cv=1,800 دج، تُباع 15/شهر\n• CF=65,000 دج/شهر\nالمالك يفكر في التخلي عن الكراسي والتركيز على الطاولات.",
+info:"📌 المساهمة في تغطية CF:\nهامش_كلي = م×Q\nالهامش الأكبر = الأكثر إسهاماً في تغطية CF والربح",
+question:"هل قرار التخلي عن الكراسي صحيح؟ احسبي الهامش الكلي لكل منتج.",
+type:"mcq",options:["لا: الكراسي (44,000) + الطاولات (40,500) = أفضل من الطاولات وحدها","نعم: الطاولة هامشها أعلى للوحدة (2,700 > 1,100)","نعم: 15 طاولة أسهل من 40 كرسي","لا يمكن التحديد"],answer:0,
+hint:"الهامش الكلي = هامش الوحدة × الكمية. أيهما يُنتج أكثر إجمالاً؟",
+explanation:"كراسي: م=1,100×40=44,000. طاولات: م=2,700×15=40,500. R_حالي=(44,000+40,500)−65,000=19,500. R_بدون_كراسي=40,500−65,000=−24,500 خسارة! الكراسي أنقذت المشروع."},
+
+{id:82,level:3,domain:"اقتصاد",
+situation:"عرض استثمار بـ 500,000 دج في مشروع تجاري:\n• خيار A: شراكة بربح ثابت 60,000 دج/سنة لـ 10 سنوات\n• خيار B: شراكة في مشروع ينمو رأسماله 10% سنوياً (يُعاد استثمار الأرباح كل سنة) لـ 10 سنوات\n(1.10)¹⁰ ≈ 2.594",
+info:"📌 المقارنة:\nA: إجمالي الربح = 60,000×10 = 600,000 دج\nB: رأس المال النهائي = 500,000×2.594 = 1,297,000 → ربح = 797,000 دج",
+question:"أيهما أفضل وبكم؟",
+type:"mcq",options:["B أفضل بـ 197,000 دج (797,000 مقابل 600,000)","A أفضل لأن الربح مضمون","متساويان تقريباً","B أفضل لكن بفارق طفيف"],answer:0,
+hint:"قارني إجمالي الربح في العشر سنوات.",
+explanation:"B يفوق A بـ 197,000 دج. لكن: A مضمون وثابت بينما B يتضمن مخاطرة تجارية حقيقية (قد ينمو أكثر أو أقل من المتوقع). إعادة استثمار الأرباح في مشروع نشط يُولّد نمواً مركّباً عبر الزمن."},
+
+{id:83,level:3,domain:"فيزياء",
+situation:"مسابقة كفاءة طاقة:\n• مصباح LED: 10 واط، يدوم 25,000 ساعة، سعره 300 دج\n• مصباح تقليدي: 60 واط، يدوم 1,000 ساعة، سعره 50 دج\nسعر kWh = 8 دج. مقارنة لـ 25,000 ساعة استخدام.",
+info:"📌 التكلفة الإجمالية = سعر الشراء + تكلفة الكهرباء\nLED يحتاج 1 مصباح. التقليدي يحتاج 25 مصباحاً.\nتكلفة الكهرباء = (قدرة بالكيلوواط) × ساعات × 8",
+question:"ما التكلفة الإجمالية للمصباح التقليدي لـ 25,000 ساعة؟",
+type:"mcq",options:["(25×50) + (0.060×25,000×8) = 1,250+12,000 = 13,250 دج","50 + (0.060×25,000×8) = 12,050 دج","25×50 + 60×25,000 = 1,502,500 دج","(0.060×25,000×8) فقط = 12,000 دج"],answer:0,
+hint:"التقليدي يحترق كل 1,000 ساعة → تحتاجين 25 مصباحاً.",
+explanation:"التقليدي: 13,250 دج. LED: 300+(0.010×25,000×8)=300+2,000=2,300 دج. LED يوفر 10,950 دج! الفرق السعري 250 دج يتضاعف 44 ضعفاً في التوفير."},
+
+{id:84,level:3,domain:"فيزياء",
+situation:"غواصة في عمق 200 م تحت الماء.\nكثافة الماء = 1,000 كغ/م³. g = 10 م/ث².\nمساحة نافذة الغواصة = 0.04 م².",
+info:"📌 الضغط عند عمق h: P = ρ×g×h\nالقوة على النافذة = P×S",
+question:"ما القوة المؤثرة على النافذة؟",
+type:"mcq",options:["P=1000×10×200=2,000,000 Pa → F=2,000,000×0.04=80,000 N","F=1000×10×200×0.04 مباشرة = 80,000 N (نفس الجواب)","F=200×0.04×10=80 N","P=ρ×g=10,000 Pa → F=400 N"],answer:0,
+hint:"P=ρgh أولاً ثم F=P×S. الخياران الأولان كلاهما صحيح.",
+explanation:"الضغط=2,000,000 Pa = 20 ضعف الضغط الجوي. القوة=80,000 N ≈ وزن 8 أطنان! لهذا نوافذ الغواصات سميكة جداً ومصنوعة من مواد خاصة."},
+
+{id:85,level:3,domain:"كيمياء",
+situation:"تحليل مياه شرب:\n• تركيز Ca²⁺ = 150 mg/L (الحد الأقصى 200 mg/L) ✓\n• تركيز Pb²⁺ = 0.02 mg/L (الحد الأقصى = 0.01 mg/L) ✗\n• pH = 7.8 (المقبول 6.5−8.5) ✓\n• تركيز NO₃⁻ = 45 mg/L (الحد الأقصى 50 mg/L) ✓\nهل المياه آمنة للشرب؟",
+info:"📌 المياه غير آمنة إذا تجاوز أي معيار حدّه\nالرصاص Pb²⁺ يتجاوز الحد الأقصى ضعفين",
+question:"ما الاستنتاج الصحيح؟",
+type:"mcq",options:["المياه غير آمنة بسبب الرصاص رغم باقي المعايير الجيدة","المياه آمنة لأن 3 من 4 معايير مقبولة","المياه مقبولة لأن 0.02 قريبة من 0.01","يجب إجراء مزيد من الاختبارات قبل الحكم"],answer:0,
+hint:"هل يكفي أن تكون 3 معايير مقبولة إذا كان الرصاص متجاوَزاً؟",
+explanation:"معيار واحد متجاوَز يكفي لجعل المياه خطرة. الرصاص سام حتى بكميات صغيرة جداً ويتراكم في الجسم. 'نجاح' في 3 معايير لا يعوض 'رسوب' في واحد خطير."},
+
+{id:86,level:3,domain:"كيمياء",
+situation:"خلطتِ محلولين:\n• 200 مل HCl تركيزه 0.4 mol/L\n• 300 مل NaOH تركيزه 0.3 mol/L\nالتفاعل: HCl + NaOH → NaCl + H₂O\nما تركيز الأيون الفائض في الخليط؟",
+info:"📌 المسار:\n1) n(HCl) = 0.4×0.2 = 0.08 مول\n2) n(NaOH) = 0.3×0.3 = 0.09 مول\n3) NaOH فائضة بـ 0.01 مول\n4) الحجم الكلي = 500 مل = 0.5 L\n5) C(OH⁻) = 0.01÷0.5",
+question:"ما تركيز الأيون الفائض؟",
+type:"mcq",options:["0.01÷0.5 = 0.02 mol/L من OH⁻ (قاعدي)","0.01÷0.2 = 0.05 mol/L","0.09−0.08 = 0.01 mol/L (بدون قسمة)","0.3−0.4 = −0.1 mol/L"],answer:0,
+hint:"الفائض = 0.01 مول في حجم كلي = 0.5 لتر.",
+explanation:"C(OH⁻)=0.02 mol/L. الخليط قاعدي. خطأ شائع: نسيان القسمة على الحجم الكلي (0.5L لا 0.3L)."},
+
+{id:87,level:3,domain:"رياضيات",
+situation:"شركة نمت:\n• السنة 1: من 100 موظف إلى 150 (+50%)\n• السنة 2: من 150 إلى 120 (−20%)\nالمدير يقول: 'النمو الإجمالي = 50%−20% = 30%'.\nهل هو محق؟",
+info:"📌 النمو المركّب:\nالإجمالي = (1+0.50)×(1−0.20) − 1 = 1.50×0.80 − 1 = 0.20 = 20%\nأو: 100 → 150 → 120. النمو = (120−100)÷100×100 = 20%",
+question:"ما النمو الإجمالي الصحيح؟",
+type:"mcq",options:["20% (من 100 إلى 120)، لا 30%","30% كما قال المدير","−20% (الشركة تراجعت)","50% (النمو الأكبر يسود"],answer:0,
+hint:"احسبي العدد النهائي: 100 → 150 → 120. نسبة التغير من البداية؟",
+explanation:"من 100 إلى 120 = نمو 20%. المدير خطأ لأن النسب المتتالية تُضرب لا تُجمع: 1.5×0.8=1.2 → نمو 20%. درس مهم: +50% ثم −20% ≠ +30%."},
+
+{id:88,level:3,domain:"رياضيات",
+situation:"مسابقة احتمالات:\nرميتِ حجر نرد مرتين. ما احتمال الحصول على مجموع = 8؟\n(المجموع الكلي للأزواج = 36)",
+info:"📌 أزواج تعطي مجموع 8:\n(2,6)(3,5)(4,4)(5,3)(6,2) = 5 أزواج\nP(مجموع=8) = 5÷36",
+question:"ما الاحتمال؟",
+type:"mcq",options:["5÷36 ≈ 13.9%","8÷36 ≈ 22.2%","5÷12 ≈ 41.7%","1÷6 ≈ 16.7%"],answer:0,
+hint:"عددي الأزواج التي مجموعها 8 بشكل منهجي.",
+explanation:"(2,6)(3,5)(4,4)(5,3)(6,2) = 5 أزواج. P=5÷36≈13.9%. المجموع 7 هو الأكثر احتمالاً (6 أزواج). المجموع 2 والمجموع 12 هما الأقل (زوج واحد لكل منهما)."},
+
+{id:89,level:3,domain:"منطق",
+situation:"إعلان تأمين: 'ادفع 500 دج/شهر وستحصل على 100,000 دج إذا أصابك مرض خطير. احتمال إصابتك = 2% سنوياً.'",
+info:"📌 القيمة المتوقعة لكل شخص:\nتكلفة التأمين السنوية = 500×12 = 6,000 دج\nالعائد المتوقع = 0.02×100,000 = 2,000 دج\nشركة التأمين تكسب = 6,000−2,000 = 4,000 دج/شخص",
+question:"هل التأمين يستحق رياضياً؟ وما الذي يجعله مقبولاً رغم ذلك؟",
+type:"mcq",options:["رياضياً لا يستحق (تخسرين 4,000/سنة في المتوسط) لكنه يحمي من كارثة مالية","رياضياً يستحق لأن 100,000 > 6,000","لا يستحق أبداً في أي حال","يستحق فقط إذا كان احتمال المرض أعلى من 6%"],answer:0,
+hint:"القيمة المتوقعة سلبية، لكن التأمين يحمي من الكارثة التي لا تستطيعين تحمّلها.",
+explanation:"رياضياً: تخسرين 4,000 دج/سنة في المتوسط. لكن التأمين يحولك من خطر كارثي (100,000 دج دفعة واحدة) إلى تكلفة محمولة (500/شهر). هذه هي قيمة التأمين: ليس الربح، بل الحماية من الكارثة."},
+
+{id:90,level:3,domain:"منطق",
+situation:"شركتان تعلنان عن نتائجهما:\n• شركة A: 'نمونا 50% هذا العام!'\n• شركة B: 'ربحنا زاد 200,000 دج!'\nالشركة A كانت تربح 10,000 دج وأصبحت 15,000 دج.\nالشركة B كانت تربح 5,000,000 دج وأصبحت 5,200,000 دج.",
+info:"📌 مقارنة النسبة مع القيمة المطلقة:\nA: نمو 50% لكن بقيمة 5,000 دج إضافية\nB: نمو 4% فقط لكن بقيمة 200,000 دج إضافية",
+question:"أيهما يمثل أداءً فعلياً أفضل للمستثمر؟",
+type:"mcq",options:["يعتمد: B أفضل للمستثمر الكبير، A أفضل للمستثمر في شركة صغيرة","A بوضوح (50% > 4%)","B بوضوح (200,000 > 5,000)","متساويتان"],answer:0,
+hint:"النسبة والقيمة المطلقة يخبران قصتين مختلفتين. أيهما يهم المستثمر؟",
+explanation:"للمستثمر الكبير: B أضافت 200,000 دج فعلية. للمستثمر في شركة ناشئة: A نمت 50% وهو علامة صحة. لا توجد إجابة مطلقة — السياق يحدد المقياس المناسب."},
+
+// ══════════════════════════════════════════════════════════
+//  LEVEL 4 — الحساب بأرقام حقيقية
+//  6 تمارين × 5 مجالات = 30 تمريناً
+// ══════════════════════════════════════════════════════════
+
+{id:91,level:4,domain:"اقتصاد",
+situation:"خياطة تبيع فساتين بـ 2,500 دج. تكلفة القماش والخيوط لكل فستان = 900 دج.",
+question:"احسب هامش الوحدة (م) بالدينار.",
+type:"number",answer:1600,unit:"دج",
+hint:"م = P − cv",
+explanation:"م = 2500 − 900 = 1,600 دج. من كل فستان، 1,600 دج تبقى لتغطية الأجرة والفواتير."},
+
+{id:92,level:4,domain:"اقتصاد",
+situation:"خياطة: هامش الفستان = 1,600 دج. سعر الفستان = 2,500 دج.",
+question:"احسب معدل الهامش على التكلفة المتغيرة (%).",
+type:"number",answer:64,unit:"%",
+hint:"معدل الهامش = م ÷ P × 100",
+explanation:"t = 1600÷2500×100 = 64%. من كل 100 دج مبيعات، 64 دج تبقى بعد تكاليف المواد."},
+
+{id:93,level:4,domain:"اقتصاد",
+situation:"خياطة: التكاليف الثابتة الشهرية (أجرة + كهرباء + ماء) = 32,000 دج. معدل الهامش = 64%.",
+question:"احسب عتبة المردودية الشهرية بالقيمة (دج).",
+type:"number",answer:50000,unit:"دج",
+hint:"SR = CF ÷ t",
+explanation:"SR = 32,000÷0.64 = 50,000 دج. يجب بيع فساتين بقيمة 50,000 دج شهرياً لتغطية كل التكاليف."},
+
+{id:94,level:4,domain:"اقتصاد",
+situation:"نفس الخياطة: هذا الشهر باعت 25 فستاناً. م = 1,600 دج. CF = 32,000 دج.",
+question:"احسب نتيجة الاستغلال (الربح أو الخسارة) بالدينار.",
+type:"number",answer:8000,unit:"دج",
+hint:"R = م × Q − CF",
+explanation:"R = 1,600×25−32,000 = 40,000−32,000 = 8,000 دج ربح."},
+
+{id:95,level:4,domain:"اقتصاد",
+situation:"بائع فاكهة: P=80 دج/كغ، cv=45 دج/كغ، CF=7,000 دج/شهر. يريد تحقيق ربح 3,500 دج هذا الشهر.",
+question:"كم كغ يجب بيعه؟",
+type:"number",answer:300,unit:"كغ",
+hint:"Q = (CF + ربح) ÷ م",
+explanation:"م=35 دج. Q=(7000+3500)÷35=10,500÷35=300 كغ."},
+
+{id:96,level:4,domain:"اقتصاد",
+situation:"مطعم: رقم الأعمال الفعلي = 120,000 دج. عتبة المردودية = 90,000 دج.",
+question:"احسب نسبة هامش الأمان (%).",
+type:"number",answer:25,unit:"%",
+hint:"نسبة_HA = (CA−SR)÷CA×100",
+explanation:"HA=30,000. نسبة_HA=30,000÷120,000×100=25%. المطعم يمكنه تحمّل انخفاض 25% في مبيعاته دون خسارة."},
+
+{id:97,level:4,domain:"فيزياء",
+situation:"طائرة ورقية تسير أفقياً بسرعة 54 كم/سا. انقطع الخيط وبدأت تتسارع نحو الأرض بـ 5 م/ث². بعد 4 ثواني، ما سرعتها الشاقولية؟",
+question:"احسب السرعة الشاقولية بعد 4 ثواني (م/ث).",
+type:"number",answer:20,unit:"م/ث",
+hint:"v_شاقولي = a × t (تبدأ من صفر)",
+explanation:"v_شاقولي = 5×4 = 20 م/ث. السرعة الأفقية (54 كم/سا = 15 م/ث) لا تتغير. السرعة الكلية = √(15²+20²) = 25 م/ث."},
+
+{id:98,level:4,domain:"فيزياء",
+situation:"رافعة تحمل صندوقاً كتلته 800 كغ وترفعه 12 م في 16 ثانية. g = 10 م/ث².",
+question:"احسب القدرة الميكانيكية للرافعة (واط).",
+type:"number",answer:6000,unit:"W",
+hint:"P = (m×g×h) ÷ t",
+explanation:"W=800×10×12=96,000 ج. P=96,000÷16=6,000 واط = 6 كيلوواط."},
+
+{id:99,level:4,domain:"فيزياء",
+situation:"مكيف هواء قدرته 1,800 واط يعمل 10 ساعات/يوم لمدة 90 يوماً صيفياً. سعر kWh = 7 دج.",
+question:"احسب تكلفة تشغيل المكيف طوال الصيف (دج).",
+type:"number",answer:11340,unit:"دج",
+hint:"E = (P÷1000) × h × أيام. التكلفة = E × 7.",
+explanation:"E=1.8×10×90=1,620 kWh. تكلفة=1,620×7=11,340 دج."},
+
+{id:100,level:4,domain:"فيزياء",
+situation:"مقاومتان على التوازي: R₁=40 Ω وR₂=60 Ω. جهد المصدر = 24 V.",
+question:"احسب التيار الكلي الخارج من المصدر (أمبير).",
+type:"number",answer:1,unit:"A",
+hint:"1/R = 1/40+1/60. ثم I = U÷R.",
+explanation:"1/R=3/120+2/120=5/120. R=24 Ω. I=24÷24=1 A. (أو مباشرة: I₁=24/40=0.6 وI₂=24/60=0.4. I=1 A)"},
+
+{id:101,level:4,domain:"فيزياء",
+situation:"سيارة كتلتها 1,200 كغ تنزل تلة بزاوية sin(θ)=0.1. معامل الاحتكاك μ=0.05. g=10 م/ث².",
+question:"احسب القوة المحرّكة الصافية على السيارة (نيوتن).",
+type:"number",answer:600,unit:"N",
+hint:"F_جاذبية// = m×g×sin(θ). F_احتكاك = μ×m×g×cos(θ) ≈ μ×m×g (cos≈1 لزاوية صغيرة).",
+explanation:"F// = 1200×10×0.1=1,200 N. F_احتكاك=0.05×1200×10=600 N. F_صافية=1200−600=600 N."},
+
+{id:102,level:4,domain:"فيزياء",
+situation:"قذيفة أُطلقت بسرعة 100 م/ث وزاوية 30° فوق الأفق. g=10 م/ث². sin30°=0.5، cos30°=0.866.",
+question:"احسب الارتفاع الأقصى الذي تبلغه القذيفة (م).",
+type:"number",answer:125,unit:"م",
+hint:"v_y = 100×sin30°=50 م/ث. h_max = v_y²÷(2g).",
+explanation:"v_y=50 م/ث. h_max=2500÷20=125 م."},
+
+{id:103,level:4,domain:"كيمياء",
+situation:"ذوّبتِ 7.4 غ من Ca(OH)₂ (M=74 غ/مول) في ماء وأكملتِ الحجم إلى 500 مل.",
+question:"احسب التركيز المولي للمحلول (mol/L).",
+type:"number",answer:0.2,unit:"mol/L",
+hint:"n = m÷M. ثم C = n÷V(L).",
+explanation:"n=7.4÷74=0.1 مول. C=0.1÷0.5=0.2 mol/L."},
+
+{id:104,level:4,domain:"كيمياء",
+situation:"تفاعل: 2Al + 3Cl₂ → 2AlCl₃\nبدأتِ بـ 27 غ Al (M=27) و213 غ Cl₂ (M=71).",
+question:"كم غ من AlCl₃ (M=133.5 غ/مول) تنتجين؟",
+type:"number",answer:133.5,unit:"غ",
+hint:"n(Al)=27÷27=1 مول. n(Cl₂)=213÷71=3 مول. 1 مول Al تحتاج 1.5 مول Cl₂ فقط.",
+explanation:"n(Al)=1 مول. n(Cl₂)=3 مول. 1 مول Al تحتاج 1.5 مول Cl₂ → عندنا 3 مول Cl₂ (كافية). Al هي المحدِّدة. من التفاعل 2Al:2AlCl₃=1:1 → n(AlCl₃)=1 مول. m=1×133.5=133.5 غ."},
+
+{id:105,level:4,domain:"كيمياء",
+situation:"تريدين تحضير 300 مل من محلول H₂SO₄ تركيزه 0.5 mol/L بالتخفيف من محلول مركّز تركيزه 6 mol/L.",
+question:"كم مل تأخذين من المحلول المركّز؟",
+type:"number",answer:25,unit:"مل",
+hint:"C₁V₁=C₂V₂ → V₁=(0.5×300)÷6.",
+explanation:"V₁=(0.5×300)÷6=150÷6=25 مل."},
+
+{id:106,level:4,domain:"كيمياء",
+situation:"أنبوب اختبار يحتوي 200 مل من HCl تركيزه 0.3 mol/L. أضفتِ له 100 مل ماء مقطر.",
+question:"ما تركيز المحلول بعد التخفيف (mol/L)؟",
+type:"number",answer:0.2,unit:"mol/L",
+hint:"n(HCl) ثابتة. الحجم الجديد = 300 مل.",
+explanation:"n(HCl)=0.3×0.2=0.06 مول. C_جديد=0.06÷0.3=0.2 mol/L."},
+
+{id:107,level:4,domain:"كيمياء",
+situation:"مريض يحتاج 2 مغ/كغ من مضاد حيوي. وزنه 65 كغ. المضاد متاح بتركيز 50 مغ/مل.",
+question:"كم مل من المحلول يأخذ المريض لكل جرعة؟",
+type:"number",answer:2.6,unit:"مل",
+hint:"الجرعة (مغ) = وزن × 2. الحجم = جرعة ÷ تركيز.",
+explanation:"الجرعة=65×2=130 مغ. الحجم=130÷50=2.6 مل."},
+
+{id:108,level:4,domain:"رياضيات",
+situation:"بلدة عدد سكانها 40,000 نسمة، تنمو بمعدل مركّب 7% سنوياً لمدة 5 سنوات. (1.07)⁵ ≈ 1.4026",
+question:"احسب عدد السكان النهائي (نسمة). مقرّب لأقرب نسمة.",
+type:"number",answer:56104,unit:"نسمة",
+hint:"Qₙ = Q₀ × (1.07)⁵",
+explanation:"Q₅ = 40,000×1.4026 = 56,104 نسمة. الزيادة = 16,104 نسمة خلال 5 سنوات."},
+
+{id:109,level:4,domain:"رياضيات",
+situation:"في مسابقة: احتمال فوز لاعبة واحدة في الجولة = 35%. لعبت 4 جولات مستقلة.",
+question:"ما احتمال الفوز في الجولات الأربع كلها (%)؟ مقرّب لعشرة.",
+type:"number",answer:1.5,unit:"%",
+hint:"P = (0.35)⁴ × 100",
+explanation:"P=(0.35)⁴=0.015=1.5%. احتمال ضئيل! مضاعفة الأحداث المستقلة تُصغّر الاحتمال بسرعة."},
+
+{id:110,level:4,domain:"رياضيات",
+situation:"متجر خفّض سعر جهاز من 15,000 دج بنسبة 25%، ثم رفعه 10%.",
+question:"ما السعر النهائي (دج)؟",
+type:"number",answer:12375,unit:"دج",
+hint:"السعر النهائي = 15,000×(1−0.25)×(1+0.10)",
+explanation:"15,000×0.75=11,250. ×1.10=12,375 دج. أقل من الأصل بـ 2,625 دج رغم الرفع."},
+
+{id:111,level:4,domain:"رياضيات",
+situation:"مدينة عدد سكانها 80,000 نسمة ينمو 6% سنوياً.",
+question:"بعد كم سنة يتضاعف عدد السكان؟ (استعملي قاعدة 72)",
+type:"number",answer:12,unit:"سنة",
+hint:"سنوات التضاعع ≈ 72 ÷ معدل النمو%",
+explanation:"72÷6=12 سنة. الجواب الدقيق: log(2)÷log(1.06)≈11.9 سنة. قاعدة 72 دقيقة جداً!"},
+
+{id:112,level:4,domain:"رياضيات",
+situation:"اختبار: 40 سؤالاً. الإجابة الصحيحة +3 نقاط. الخاطئة −1 نقطة. لم تُجب على 5 أسئلة. أجبتِ على 35 سؤالاً وكان 28 منها صحيحة.",
+question:"ما درجتك الإجمالية؟",
+type:"number",answer:77,unit:"نقطة",
+hint:"الدرجة = (صحيحة×3) + (خاطئة×−1) + (لم تُجب×0).",
+explanation:"خاطئة=35−28=7. الدرجة=(28×3)+(7×−1)=84−7=77 نقطة."},
+
+{id:113,level:4,domain:"منطق",
+situation:"متجر A: سعر 8,000 دج خصم 40%.\nمتجر B: سعر 5,500 دج خصم 15%.\nمتجر C: سعر 6,200 دج خصم 25%.",
+question:"ما ترتيب الأسعار النهائية من الأرخص للأغلى؟",
+type:"number",answer:4675,unit:"دج (C الأرخص)",
+hint:"احسبي السعر النهائي لكل متجر: A=8000×0.6، B=5500×0.85، C=6200×0.75.",
+explanation:"A=4,800. B=4,675. C=4,650. الترتيب: C(4,650) < B(4,675) < A(4,800). C الأرخص رغم سعره الأصلي الأعلى من B!"},
+
+{id:114,level:4,domain:"منطق",
+situation:"دراسة على 200 طالب: 120 يذاكرون يومياً و80 لا يذاكرون.\nمن المذاكرين: 90 ناجحون (75%).\nمن غير المذاكرين: 40 ناجحون (50%).",
+question:"كم طالباً ناجحاً إجمالاً؟",
+type:"number",answer:130,unit:"طالب",
+hint:"ناجحو المجموعة الأولى + ناجحو المجموعة الثانية.",
+explanation:"90+40=130 طالباً ناجحاً. نسبة النجاح الكلية=130÷200=65%. المذاكرة رفعت الاحتمال من 50% إلى 75%."},
+
+{id:115,level:4,domain:"منطق",
+situation:"مسابقة يانصيب: تذكرة بـ 100 دج.\nجائزة أولى: 50,000 دج (احتمال 1÷2000).\nجائزة ثانية: 1,000 دج (احتمال 1÷100).",
+question:"احسب القيمة المتوقعة للتذكرة (دج).",
+type:"number",answer:35,unit:"دج",
+hint:"QM = (1/2000×50,000) + (1/100×1,000).",
+explanation:"QM=25+10=35 دج. ثمن التذكرة 100 دج > 35 دج. خسارة متوقعة 65 دج لكل تذكرة. المنظِّم يكسب 65 دج في المتوسط من كل مشترك."},
+
+{id:116,level:4,domain:"منطق",
+situation:"مصنعان يُنتجان نفس المنتج:\n• مصنع A: 10,000 وحدة/يوم، عيب في 0.5%\n• مصنع B: 6,000 وحدة/يوم، عيب في 1.2%",
+question:"كم وحدة معيبة تنتج المصنعان معاً يومياً؟",
+type:"number",answer:122,unit:"وحدة",
+hint:"معيبات A = 10,000×0.005. معيبات B = 6,000×0.012.",
+explanation:"A: 50 وحدة. B: 72 وحدة. الإجمالي=122 وحدة. رغم معدل عيب A أقل، إنتاجه الأكبر يعني عيوباً أكثر بالعدد المطلق!"},
+
+{id:117,level:4,domain:"منطق",
+situation:"سيارتان تتعقبان لصاً:\n• سيارة الشرطة: تبدأ من نقطة A بسرعة 120 كم/سا\n• سيارة اللص: تبدأ من نفس النقطة قبل 10 دقائق بسرعة 90 كم/سا",
+question:"بعد كم دقيقة تلحق سيارة الشرطة باللص؟",
+type:"number",answer:30,unit:"دقيقة",
+hint:"تقدم اللص = 90×(10/60) = 15 كم. الشرطة تكسب 30 كم/سا. الوقت = 15÷30 ساعة.",
+explanation:"تقدم اللص=15 كم. الشرطة تسبق بـ30 كم/سا. وقت اللحاق=15÷30=0.5 ساعة=30 دقيقة."},
+
+{id:118,level:4,domain:"منطق",
+situation:"شركة تُعلن: 'خسائرنا انخفضت 80%!' السنة الماضية خسرت 50,000 دج. هذه السنة خسرت 10,000 دج.",
+question:"هل الإعلان صحيح رياضياً؟ احسب نسبة الانخفاض الفعلية.",
+type:"number",answer:80,unit:"%",
+hint:"نسبة الانخفاض = (50,000−10,000)÷50,000×100",
+explanation:"(40,000÷50,000)×100=80%. الإعلان صحيح رياضياً. لكن انتبهي: الشركة لا تزال تخسر! 'تحسّن الأداء' لا يعني 'ربح'. قراءة الأرقام بعقل ناقد ضرورية."},
+
+{id:119,level:4,domain:"منطق",
+situation:"بيانات مبيعات متجر في 5 أشهر:\n50, 80, 45, 90, 85 وحدة.\nالمدير يريد 'الرقم الأكثر تمثيلاً للأداء'.",
+question:"احسب المتوسط والوسيط. أيهما أكثر تمثيلاً هنا؟",
+type:"number",answer:80,unit:"(الوسيط)",
+hint:"المتوسط=(50+80+45+90+85)÷5. الوسيط=القيمة الوسطى بعد الترتيب.",
+explanation:"المتوسط=350÷5=70. الوسيط (بعد الترتيب: 45,50,80,85,90)=80. الوسيط أكثر تمثيلاً لأن 4 من 5 أشهر ≥ 80. المتوسط تأثّر بالشهر الضعيف (45)."},
+
+{id:120,level:4,domain:"منطق",
+situation:"تريدين السفر مسافة 300 كم. خيارات:\n• سيارة: 7 ل/100كم × 60 دج/ل + 1 ساعة\n• قطار: تذكرة 900 دج + 2 ساعة\n• طائرة: تذكرة 3,500 دج + 1.5 ساعة (مع التنقل للمطار)\nإذا قيّمتِ الساعة بـ 500 دج:",
+question:"ما التكلفة الإجمالية (مال+وقت) للقطار (دج)؟",
+type:"number",answer:1900,unit:"دج",
+hint:"تكلفة القطار = 900 + (2×500).",
+explanation:"قطار: 900+1,000=1,900 دج. سيارة: (7×3×60)+500=1,260+500=1,760 دج. طائرة: 3,500+750=4,250 دج. السيارة أرخص إجمالاً! القطار ثانياً."},
+
+// ══════════════════════════════════════════════════════════
+//  LEVEL 5 — مسائل شاملة كاملة
+// ══════════════════════════════════════════════════════════
+
+{id:121,level:5,domain:"اقتصاد",
+situation:"مشروع إنتاج زيت زيتون:\n• سعر البيع: 800 دج/لتر\n• تكلفة الإنتاج المتغيرة: 350 دج/لتر\n• التكاليف الثابتة الشهرية: 135,000 دج\n• الطاقة الإنتاجية القصوى: 500 لتر/شهر\n• الإنتاج الحالي: 350 لتر/شهر\n\nسوبرماركة عرضت شراء 100 لتر إضافية بسعر مخفَّض 550 دج/لتر فقط.\n\nالمطلوب:\n1) احسب نتيجة الاستغلال الحالية\n2) هل تقبلين عرض السوبرماركة؟ ولماذا؟\n3) ما نتيجة الاستغلال إذا قبلتِ؟",
+question:"ما نتيجة الاستغلال الحالية (دج)؟",
+type:"number",answer:22500,unit:"دج",
+hint:"R = م×Q − CF. م = 800−350.",
+explanation:"م=450. R=450×350−135,000=157,500−135,000=22,500 دج. للعرض: السعر (550) > cv (350) → هامش=200×100=20,000 دج إضافي. R_جديد=22,500+20,000=42,500 دج. نعم، قبولي العرض يضاعف الربح تقريباً!"},
+
+{id:122,level:5,domain:"اقتصاد",
+situation:"خياطة تبيع منتجين:\n• فستان سهرة: P=4,500 دج، cv=1,800 دج، تبيع 20/شهر\n• فستان يومي: P=1,500 دج، cv=600 دج، تبيع 60/شهر\n• CF=75,000 دج/شهر\n\nمورد عرض خامات أفضل جودة ستزيد cv الفستان اليومي بـ 200 دج لكن سيسمح برفع سعره 300 دج.\n\n1) ما نتيجة الاستغلال الحالية؟\n2) هل يستحق تبني عرض المورد؟",
+question:"ما نتيجة الاستغلال الحالية (دج)؟",
+type:"number",answer:9000,unit:"دج",
+hint:"R = (م_سهرة×20 + م_يومي×60) − CF.",
+explanation:"م_سهرة=2,700. م_يومي=900. R=(2,700×20+900×60)−75,000=(54,000+54,000)−75,000=33,000 دج. للعرض: م_يومي_جديد=900+100=1,000. R_جديد=(54,000+60,000)−75,000=39,000 دج. نعم، يستحق! +6,000 دج/شهر."},
+
+{id:123,level:5,domain:"اقتصاد",
+situation:"مقهى يدرس إضافة خدمة توصيل:\n• تكلفة التوصيل الإضافية: 15,000 دج/شهر (سائق + وقود)\n• يتوقع جذب 200 طلبية توصيل/شهر\n• متوسط قيمة الطلبية: 350 دج\n• هامش المقهى على المبيعات: 60%\n\n1) ما الهامش المتوقع من التوصيل؟\n2) هل يغطي تكلفة التوصيل الإضافية؟\n3) ما الحد الأدنى من الطلبيات للتعادل؟",
+question:"ما الهامش الإجمالي المتوقع من 200 طلبية (دج)؟",
+type:"number",answer:42000,unit:"دج",
+hint:"الهامش الإجمالي = 200 × 350 × 60%.",
+explanation:"الهامش=200×350×0.60=42,000 دج > 15,000 (تكلفة التوصيل). نعم، يستحق! الربح الإضافي=27,000 دج/شهر. للتعادل: طلبيات_min=15,000÷(350×0.60)=71.4 → 72 طلبية كافية."},
+
+{id:124,level:5,domain:"فيزياء",
+situation:"مركبة فضائية تتسارع في الفضاء:\n• الكتلة الكلية (مركبة + وقود): 50,000 كغ\n• قوة المحركات: 500,000 N\n• معدل استهلاك الوقود: 100 كغ/ثانية\n• مدة الاحتراق: 200 ثانية\n\n1) ما التسارع الابتدائي (في بداية الاحتراق)؟\n2) ما الكتلة في نهاية الاحتراق؟\n3) ما التسارع في نهاية الاحتراق (بفرض القوة ثابتة)؟",
+question:"ما التسارع الابتدائي (م/ث²)؟",
+type:"number",answer:10,unit:"م/ث²",
+hint:"a = F ÷ m_ابتدائية",
+explanation:"a_ابتدائي=500,000÷50,000=10 م/ث². الكتلة النهائية=50,000−(100×200)=30,000 كغ. a_نهائي=500,000÷30,000=16.7 م/ث². هذا يفسر لماذا الصاروخ يتسارع بشكل متزايد كلما احترق وقوده!"},
+
+{id:125,level:5,domain:"فيزياء",
+situation:"شبكة طاقة شمسية لقرية:\n• عدد الألواح: 50 لوح × 300 واط\n• ساعات عمل فعلية: 6 ساعات/يوم\n• مردود النظام الكلي: 85%\n• احتياج القرية: 70 kWh/يوم\n\n1) ما الطاقة المنتجة فعلياً يومياً؟\n2) هل تكفي لاحتياج القرية؟\n3) ما عدد الألواح الإضافية اللازمة إذا لم تكفِ؟",
+question:"ما الطاقة المنتجة فعلياً يومياً (kWh)؟",
+type:"number",answer:76.5,unit:"kWh",
+hint:"الطاقة = (50×0.3 kW) × 6 ساعات × 0.85.",
+explanation:"الطاقة=50×0.3×6×0.85=76.5 kWh > 70 kWh. تكفي! الفائض=6.5 kWh/يوم. ممتاز: النظام يغطي الاحتياج مع احتياطي للأيام الغائمة."},
+
+{id:126,level:5,domain:"فيزياء",
+situation:"منزل يريد تقليل فاتورة الكهرباء:\n• تغيير كل المصابيح: 20 مصباح × (60W→10W LED)\n• تكلفة كل مصباح LED: 250 دج\n• ساعات استخدام: 8 ساعات/يوم\n• سعر kWh: 8 دج\n\n1) التوفير اليومي في kWh\n2) التوفير المالي الشهري\n3) خلال كم شهر يُسترد استثمار الـLED؟",
+question:"ما التوفير المالي الشهري (دج)؟",
+type:"number",answer:384,unit:"دج",
+hint:"فرق القدرة = 20×(60−10)=1,000W. التوفير/يوم = 1 kWh × 8 دج. × 30 يوم.",
+explanation:"التوفير/يوم=1 kWh×8=8 دج. التوفير/شهر=8×30=240 دج... انتظري: 20 مصباح×50W=1,000W=1 kWh/ساعة×8=8 kWh/يوم×8 دج=64 دج/يوم×30=1,920 دج/شهر. تكلفة LED=20×250=5,000 دج. الاسترداد=5,000÷1,920≈2.6 شهر."},
+
+{id:127,level:5,domain:"كيمياء",
+situation:"مختبر يحضّر دواء:\n• التفاعل: A + 2B → C (الدواء المطلوب)\n• M(A)=120 غ/مول، M(B)=36 غ/مول، M(C)=192 غ/مول\n• البداية: 360 غ من A و360 غ من B\n• سعر A: 500 دج/غ. سعر B: 200 دج/غ\n• سعر الدواء C: 2,000 دج/غ\n\n1) ما المادة المحدِّدة؟\n2) كم غ من C تنتج؟\n3) ما الربح من بيع C مقارنة بتكلفة المواد الخام؟",
+question:"كم غراماً من الدواء (C) تنتجين؟",
+type:"number",answer:384,unit:"غ",
+hint:"n(A)=360÷120=3 مول. n(B)=360÷36=10 مول. 3 مول A تحتاج 6 مول B. عندنا 10 → A محدِّدة. n(C)=n(A)=3 مول.",
+explanation:"A محدِّدة. n(C)=3 مول. m(C)=3×192=576 غ... انتظري: A+2B→C يعني 1 مول A ينتج 1 مول C. n(C)=3 مول. m=3×192=576 غ. تكلفة=(360×500)+(360×200)=252,000 دج. إيرادات=576×2,000=1,152,000 دج. ربح=900,000 دج!"},
+
+{id:128,level:5,domain:"كيمياء",
+situation:"تنظيف صناعي بالكلور:\n• محلول أصلي: Cl₂ تركيزه 5% (w/v) في 10 لتر\n• يُخفَّف إلى 0.1% للاستخدام\n• تفاعل الكلور مع الجراثيم: Cl₂ + H₂O → HCl + HClO\n• HClO هو العامل المطهِّر الفعّال\n• M(Cl₂)=71 غ/مول، M(HClO)=52.5 غ/مول\n\n1) ما حجم المحلول المخفَّف الذي يمكن تحضيره؟\n2) كم غ Cl₂ في 10 لتر من المحلول الأصلي؟\n3) كم مول HClO يمكن إنتاجه نظرياً؟",
+question:"ما حجم المحلول المخفَّف (0.1%) الذي يمكن تحضيره من 10 لتر أصلية (لتر)؟",
+type:"number",answer:500,unit:"لتر",
+hint:"C₁V₁=C₂V₂ → 5×10=0.1×V₂.",
+explanation:"V₂=5×10÷0.1=500 لتر. كتلة Cl₂=(5÷100)×10,000 مل=500 غ. n(Cl₂)=500÷71=7.04 مول → n(HClO)=7.04 مول=7.04×52.5=369.5 غ HClO."},
+
+{id:129,level:5,domain:"كيمياء",
+situation:"تحليل تغذية:\nوجبة تحتوي:\n• 30 غ بروتين (4 سعر/غ)\n• 50 غ كربوهيدرات (4 سعر/غ)\n• 20 غ دهون (9 سعر/غ)\n• 5 غ ألياف (2 سعر/غ)\n\nشخص يحتاج 2,000 سعر/يوم. يأكل هذه الوجبة 3 مرات/يوم.\n\n1) كم سعراً في الوجبة الواحدة؟\n2) هل 3 وجبات تكفي الاحتياج اليومي؟\n3) ما نسبة الدهون من إجمالي السعرات؟",
+question:"كم سعراً حرارياً في الوجبة الواحدة؟",
+type:"number",answer:590,unit:"سعر حراري",
+hint:"السعرات = (30×4)+(50×4)+(20×9)+(5×2).",
+explanation:"سعرات=120+200+180+10=510... انتظري: 30×4=120، 50×4=200، 20×9=180، 5×2=10. الإجمالي=510 سعر. 3 وجبات=1,530 < 2,000 → غير كافية (يحتاج وجبات خفيفة). الدهون=180÷510×100=35.3%."},
+
+{id:130,level:5,domain:"رياضيات",
+situation:"شركة ناشئة تدرس توسّعها:\n• الإيرادات الحالية: 200,000 دج/شهر\n• معدل النمو المتوقع: 15%/شهر (مركّب)\n• التكاليف الثابتة: 50,000 دج/شهر تنمو 5%/شهر\n• التكاليف المتغيرة: 60% من الإيرادات\n\nبعد 6 أشهر: (1.15)⁶≈2.313، (1.05)⁶≈1.340\n\n1) ما الإيرادات بعد 6 أشهر؟\n2) ما التكاليف الثابتة بعد 6 أشهر؟\n3) ما الربح بعد 6 أشهر؟",
+question:"ما الإيرادات المتوقعة بعد 6 أشهر (دج)؟",
+type:"number",answer:462600,unit:"دج",
+hint:"الإيرادات = 200,000 × (1.15)⁶",
+explanation:"الإيرادات=200,000×2.313=462,600 دج. CF=50,000×1.340=67,000 دج. CV=462,600×0.60=277,560 دج. الربح=462,600−67,000−277,560=118,040 دج. مقارنة بالشهر الأول: الربح=200,000×0.40−50,000=30,000 دج. الربح تضاعف تقريباً 4 مرات!"},
+
+{id:131,level:5,domain:"رياضيات",
+situation:"مسألة التقاعد:\nموظفة تبدأ التخطيط الآن عمرها 30 سنة. تريد امتلاك أصل (عقار/مشروع) بقيمة 5,000,000 دج عند التقاعد في سن 60.\n• الخيار A: تستثمر مبلغاً واحداً الآن في مشروع تجاري ينمو رأسماله بمعدل 8%/سنة (نمو حقيقي من نشاط تجاري)\n• الخيار B: تدّخر مبلغاً ثابتاً كل شهر بدون أي نمو\n\n(1.08)³⁰≈10.06\n\n1) كم تستثمر الآن في الخيار A؟\n2) إذا أرادت في الخيار B ادخاراً شهرياً بسيطاً: كم في الشهر؟",
+question:"كم دجاً تستثمر الآن في الخيار A لتحقيق 5,000,000 دج بعد 30 سنة؟",
+type:"number",answer:497017,unit:"دج",
+hint:"C₃₀ = C₀×(1.08)³⁰ = 5,000,000 → C₀ = 5,000,000÷10.06",
+explanation:"C₀=5,000,000÷10.06≈497,017 دج. الخيار B (بدون نمو): 5,000,000÷(30×12)=13,889 دج/شهر. الرسالة: الاستثمار المبكر في نشاط حقيقي ينمو بشكل مركّب يحتاج 497 ألف فقط، بينما الادخار الثابت بدون نمو يحتاج 5 ملايين كاملة إجمالاً!"},
+
+{id:132,level:5,domain:"رياضيات",
+situation:"مسابقة رياضية: دوري 8 فرق (كل فريق يلاقي الآخر مرة واحدة).\nنقاط: فوز=3، تعادل=1، خسارة=0.\n\n1) كم مباراة إجمالاً في الدوري؟\n2) كم نقطة يمكن توزيعها إجمالاً؟ (حالة الفوز الكامل + حالة التعادل الكامل)\n3) إذا انتهت جميع المباريات بفوز (لا تعادل): كم نقطة يحصل الفائز الأول إذا فاز بكل مبارياته؟",
+question:"كم مباراة إجمالاً في دوري 8 فرق؟",
+type:"number",answer:28,unit:"مباراة",
+hint:"عدد المباريات = C(8,2) = 8×7÷2.",
+explanation:"28 مباراة. النقاط عند الفوز الكامل: 28×3=84 نقطة. عند التعادل الكامل: 28×2=56 نقطة. الفائز الذي يفوز بكل مبارياته: 7 مباريات×3=21 نقطة."},
+
+{id:133,level:5,domain:"منطق",
+situation:"شركة أدوية تختبر دواء جديد لضغط الدم:\n• المجموعة أ (600 مريض أخذوا الدواء): الضغط انخفض عند 480 (80%)\n• المجموعة ب (600 مريض أخذوا وهماً): الضغط انخفض عند 360 (60%)\n• التكلفة: 2,000 دج/مريض/شهر\n• دواء بديل: فعالية 65%، تكلفة 800 دج/شهر\n\n1) ما الفعالية الحقيقية للدواء الجديد (فوق الوهم)؟\n2) هل يستحق سعره مقارنة بالبديل؟",
+question:"ما الفعالية الحقيقية للدواء الجديد (%)؟",
+type:"number",answer:20,unit:"%",
+hint:"الفعالية = P(مع دواء) − P(مع وهم) = 80%−60%.",
+explanation:"الفعالية=20% فوق الوهم. البديل فعاليته الإضافية=65%−60%(افتراضي)=5%. الدواء الجديد أفضل فعلياً (20% > 5%). لكن هل 2,000÷800=2.5 ضعف السعر يستحق 4 أضعاف الفعالية؟ قرار طبي واقتصادي معاً."},
+
+{id:134,level:5,domain:"منطق",
+situation:"مدينتان تتنافسان لاستضافة فعالية رياضية:\n• المدينة A: تكلفة البناء 2 مليار دج، عائد سياحي متوقع 500 مليون/سنة\n• المدينة B: تكلفة البناء 800 مليون دج، عائد سياحي 180 مليون/سنة\n• عمر المنشآت: 20 سنة\n\n1) ما إجمالي العائد لكل مدينة؟\n2) ما صافي الربح لكل مدينة؟\n3) أيهما أفضل استثماراً؟",
+question:"ما صافي الربح لمدينة A خلال 20 سنة (مليون دج)؟",
+type:"number",answer:8000,unit:"مليون دج",
+hint:"صافي الربح = العائد الإجمالي − تكلفة البناء.",
+explanation:"A: 500×20=10,000−2,000=8,000 مليون. B: 180×20=3,600−800=2,800 مليون. A أفضل بصافي ربح أعلى. لكن: A تحتاج استثماراً أولياً أكبر (ريسك أعلى). ROI: A=8000÷2000=4 ضعف، B=2800÷800=3.5 ضعف. A أفضل من كل الجوانب!"},
+
+{id:135,level:5,domain:"منطق",
+situation:"تقرير عن حوادث المرور في 3 مدن:\n• مدينة A: 300 حادث/سنة من 500,000 نسمة\n• مدينة B: 180 حادث/سنة من 200,000 نسمة\n• مدينة C: 450 حادث/سنة من 900,000 نسمة\n\nوزير النقل يقول: 'مدينة B آمن لأن حوادثها أقل من A'.\nمحلل يقول: 'مدينة C الأكثر أماناً لأن نسبة الحوادث فيها أقل'.\n\nاحسب معدل الحوادث لكل 100,000 نسمة وحدد الأصح.",
+question:"ما معدل حوادث مدينة C لكل 100,000 نسمة؟",
+type:"number",answer:50,unit:"حادث/100,000",
+hint:"معدل C = 450÷900,000×100,000.",
+explanation:"A=300÷500,000×100,000=60. B=180÷200,000×100,000=90. C=450÷900,000×100,000=50. C فعلاً الأكثر أماناً! المحلل محق. الوزير استخدم الأرقام المطلقة وهي مضلِّلة لمدن مختلفة الحجم."},
+
+{id:136,level:5,domain:"اقتصاد",
+situation:"مصنع يخطط للتوسع:\n• الطاقة الحالية: 1,000 وحدة/شهر، P=500 دج، cv=200 دج، CF=90,000 دج\n• التوسع يكلف 600,000 دج استثماراً أولياً\n• بعد التوسع: طاقة 2,000 وحدة، CF تصبح 150,000 دج، cv تنخفض لـ 170 دج\n• المبيعات المتوقعة بعد التوسع: 1,600 وحدة/شهر\n\n1) ما الربح الحالي؟\n2) ما الربح المتوقع بعد التوسع؟\n3) خلال كم شهر يُسترد استثمار التوسع؟",
+question:"ما الربح الشهري الحالي (دج)؟",
+type:"number",answer:210000,unit:"دج",
+hint:"R = (500−200)×1000 − 90,000.",
+explanation:"R_حالي=(300×1000)−90,000=210,000 دج. R_بعد=(500−170)×1600−150,000=330×1600−150,000=528,000−150,000=378,000 دج. الزيادة=168,000 دج/شهر. فترة الاسترداد=600,000÷168,000≈3.6 شهر فقط!"},
+
+{id:137,level:5,domain:"فيزياء",
+situation:"قطار كهربائي:\n• الكتلة: 200,000 كغ\n• يتسارع من الصفر لـ 180 كم/سا في 5 دقائق\n• معامل الاحتكاك: 0.01\n• g=10 م/ث²\n\n1) ما التسارع؟\n2) ما قوة الاحتكاك؟\n3) ما القوة الإجمالية للمحركات؟\n4) ما القدرة عند الوصول لـ 180 كم/سا؟",
+question:"ما التسارع المتوسط (م/ث²)؟",
+type:"number",answer:0.1,unit:"م/ث²",
+hint:"v = 180÷3.6=50 م/ث. t=5×60=300 ث. a=v÷t.",
+explanation:"a=50÷300=0.167 م/ث²... انتظري: a=Δv/t=50/300=1/6≈0.167. قوة الاحتكاك=0.01×200,000×10=20,000 N. F_إجمالية=ma+احتكاك=200,000×0.167+20,000=33,400+20,000=53,400 N. القدرة=F×v=53,400×50=2,670,000 واط=2.67 MW."},
+
+{id:138,level:5,domain:"كيمياء",
+situation:"تحليل عيّنة مياه بحر:\n• الملوحة: 35 غ/لتر (كلها NaCl تقريباً، M=58.5)\n• تريدين حساب التركيز المولي\n• تحتاجين إزالة ملح من 100 لتر للحصول على مياه عذبة\n• عملية التحلية تكلف 50 دج/غ ملح مُزال\n\n1) ما التركيز المولي لـ NaCl في البحر؟\n2) كم غ ملح في 100 لتر؟\n3) كم تكلف تحلية 100 لتر؟",
+question:"ما التركيز المولي لـ NaCl في مياه البحر (mol/L)؟",
+type:"number",answer:0.598,unit:"mol/L",
+hint:"C = (35 غ/L) ÷ (58.5 غ/مول).",
+explanation:"C=35÷58.5=0.598 mol/L. ملح في 100 L=35×100=3,500 غ. تكلفة التحلية=3,500×50=175,000 دج لـ100 لتر! هذا يفسر لماذا مياه التحلية غالية جداً مقارنة بالمياه الطبيعية."},
+
+{id:139,level:5,domain:"رياضيات",
+situation:"تحليل مالي لعقار:\n• شراء شقة بـ 8,000,000 دج\n• إيجار شهري متوقع: 45,000 دج\n• مصاريف صيانة ورسوم: 5,000 دج/شهر\n• معدل تضخم يرفع الإيجار 5%/سنة\n• بعد 10 سنوات: سعر العقار سيرتفع 40%\n\n1) صافي الإيجار الشهري الأول\n2) إجمالي الإيجارات في السنة الأولى\n3) ما إجمالي العائد بعد 10 سنوات (إيجارات + بيع)؟\n(للتبسيط: اعتبري الإيجار ثابتاً بمتوسط 60,000 دج/شهر على 10 سنوات)",
+question:"ما صافي الإيجار الشهري في السنة الأولى (دج)؟",
+type:"number",answer:40000,unit:"دج",
+hint:"صافي = إيجار − مصاريف = 45,000−5,000.",
+explanation:"صافي شهري=40,000 دج. في السنة الأولى=40,000×12=480,000 دج. إجمالي 10 سنوات (بمتوسط 60,000 صافٍ): 60,000×12×10−5,000×12×10=7,200,000−600,000=6,600,000. سعر البيع=8,000,000×1.40=11,200,000. العائد الكلي=6,600,000+11,200,000−8,000,000=9,800,000 دج خلال 10 سنوات!"},
+
+{id:140,level:5,domain:"منطق",
+situation:"مقارنة 3 سياسات صحية لتقليل التدخين:\n• السياسة A (رفع الضريبة 50%): تكلف 100 مليون، قللت المدخنين 15%\n• السياسة B (حملات توعية): تكلف 30 مليون، قللت المدخنين 8%\n• السياسة C (حظر الإعلانات): تكلف 10 مليون، قللت المدخنين 5%\n\nعدد المدخنين الابتدائي: 2,000,000 شخص.\n\n1) كم شخصاً أقلع عن التدخين في كل سياسة؟\n2) ما تكلفة إقلاع كل شخص في كل سياسة؟\n3) أيها الأكثر كفاءة اقتصادياً؟",
+question:"كم شخصاً أقلع في السياسة A؟",
+type:"number",answer:300000,unit:"شخص",
+hint:"عدد المقلعين = 2,000,000 × 15%.",
+explanation:"A: 300,000 شخص. تكلفة/شخص=100,000,000÷300,000=333 دج. B: 160,000 شخص. تكلفة/شخص=30,000,000÷160,000=187.5 دج. C: 100,000 شخص. تكلفة/شخص=10,000,000÷100,000=100 دج. C الأكثر كفاءة! لكن A أكثر تأثيراً. القرار السياسي يوازن بين الكفاءة والأثر الكلي."},
+
+{id:141,level:5,domain:"اقتصاد",
+situation:"تاجر قهوة:\n• يشتري بـ 2,400 دج/كغ ويبيع بـ 3,200 دج/كغ\n• هذا الشهر اشترى 200 كغ لكن باع 180 كغ فقط\n• CF=25,000 دج/شهر\n• المخزون المتبقي (20 كغ) سيُباع الشهر القادم\n\n1) ما ربحه هذا الشهر؟\n2) هل يجب احتساب تكلفة المخزون في هذا الشهر؟",
+question:"ما نتيجة الاستغلال الصحيحة لهذا الشهر (دج)؟",
+type:"number",answer:119000,unit:"دج",
+hint:"نحتسب فقط تكلفة ما بِيع (180 كغ). R = (3200−2400)×180 − 25,000.",
+explanation:"R=(800×180)−25,000=144,000−25,000=119,000 دج. المخزون (20 كغ×2,400=48,000 دج) هو أصل متداول، لا تكلفة هذا الشهر. الخطأ الشائع: طرح تكلفة 200 كغ كاملة يعطي R=160,000−48,000−25,000=87,000 دج — خطأ محاسبي."},
+
+{id:142,level:5,domain:"فيزياء",
+situation:"منزل يريد تدفئة غرفة 50 م² × 3 م ارتفاع من 10°م إلى 22°م:\n• كثافة الهواء: 1.2 كغ/م³\n• السعة الحرارية للهواء: 1,005 ج/(كغ·K)\n• المدفأة قدرتها 2,000 واط ومردودها 90%\n\n1) ما حجم الهواء في الغرفة؟\n2) ما كتلة الهواء؟\n3) كم طاقة تحتاج لرفع درجة الحرارة 12°م؟\n4) كم دقيقة تحتاج المدفأة للتدفئة؟",
+question:"كم جولاً من الطاقة تحتاجين لرفع درجة حرارة الهواء 12°م؟",
+type:"number",answer:2170800,unit:"جول",
+hint:"Q = m×c×ΔT. m=حجم×كثافة. الحجم=50×3.",
+explanation:"V=150 م³. m=150×1.2=180 كغ. Q=180×1,005×12=2,170,800 ج. القدرة المفيدة=2,000×0.90=1,800 واط. الزمن=2,170,800÷1,800=1,206 ث≈20 دقيقة. في الواقع أطول بسبب خسائر الحرارة من الجدران."},
+
+{id:143,level:5,domain:"كيمياء",
+situation:"تصنيع صابون:\nالتفاعل: C₁₇H₃₅COONa (صابون) من زيت نخيل وNaOH\nللتبسيط: 1 مول زيت (M=800 غ/مول) + 3 مول NaOH → 3 مول صابون (M=306 غ/مول) + جلسرين\n\n• لديك 16 كغ زيت و1.5 كغ NaOH (M=40 غ/مول)\n• سعر الزيت: 300 دج/كغ\n• سعر NaOH: 150 دج/كغ\n• سعر الصابون: 500 دج/كغ\n\n1) ما المادة المحدِّدة؟\n2) كم كغ صابون تنتجين؟\n3) ما الربح؟",
+question:"كم مول NaOH لديك؟",
+type:"number",answer:37.5,unit:"مول",
+hint:"n(NaOH) = 1,500 غ ÷ 40 غ/مول.",
+explanation:"n(NaOH)=37.5 مول. n(زيت)=16,000÷800=20 مول. 20 مول زيت يحتاج 60 مول NaOH، عندنا 37.5 → NaOH محدِّدة. n(صابون)=37.5 مول. كتلة=37.5×306=11,475 غ≈11.5 كغ. تكلفة=(16×300)+(1.5×150)=4,800+225=5,025 دج. إيراد=11.5×500=5,750 دج. ربح=725 دج."},
+
+{id:144,level:5,domain:"رياضيات",
+situation:"تحليل بيانات طلاب:\n30 طالبة، درجاتهن: 12,15,18,14,16,11,19,13,17,15,12,14,16,18,20,11,15,13,17,14,16,12,15,18,13,17,15,14,16,15\n\nالمطلوب:\n1) المتوسط\n2) الوسيط\n3) المنوال\n4) هل توزيع الدرجات متماثل أم منحاز؟",
+question:"ما متوسط درجات الطالبات؟",
+type:"number",answer:14.8,unit:"درجة",
+hint:"المجموع ÷ 30. (جمّعي الأرقام)",
+explanation:"المجموع=444. المتوسط=444÷30=14.8. الوسيط (القيمة 15 و16 بعد الترتيب)=15. المنوال=15 (الأكثر تكراراً). التوزيع شبه متماثل مع انحياز طفيف للأسفل (متوسط<وسيط)."},
+
+{id:145,level:5,domain:"منطق",
+situation:"مناظرة حول السيارات الكهربائية:\n• محام A: 'السيارة الكهربائية أنظف — لا عادم!'\n• محام B: 'الكهرباء تُنتج من محطات فحم — ليست أنظف'\n• محام C: 'الكفاءة الكلية تحدد التأثير البيئي'\n\nبيانات:\n• محطة فحم: كفاءة 38%، تنتج 800 غ CO₂/kWh\n• سيارة كهربائية: 150 wh/كم\n• سيارة بنزين: تُصدر 120 غ CO₂/كم\n\n1) كم CO₂ تُصدر السيارة الكهربائية لكل كم (من محطة الفحم)؟\n2) أيهما أقل تلويثاً؟\n3) من المحامون الثلاثة الأقرب للحقيقة؟",
+question:"كم غ CO₂ تُصدر السيارة الكهربائية لكل كم (عبر محطة الفحم)؟",
+type:"number",answer:120,unit:"غ CO₂/كم",
+hint:"الطاقة/كم = 150 Wh = 0.15 kWh. CO₂ = 0.15 × 800.",
+explanation:"CO₂ = 0.15×800=120 غ/كم. مساوٍ للبنزين! محام A خطأ، B أقرب للحقيقة، C الأصح: الكفاءة الكلية تحدد التأثير. في الجزائر: الكهرباء من غاز طبيعي (أنظف من الفحم) → الكهربائية فعلاً أفضل. الدرس: التبسيط الزائد في النقاشات البيئية خطير."},
+
+{id:146,level:5,domain:"اقتصاد",
+situation:"استراتيجية تسعير:\nمصنع يبيع منتجاً لـ 3 زبائن بأسعار مختلفة:\n• سوبرماركة: 200 وحدة/شهر × 450 دج\n• جملة: 500 وحدة × 380 دج\n• أفراد (مباشر): 100 وحدة × 600 دج\n• cv = 200 دج/وحدة\n• CF = 150,000 دج/شهر\n\n1) ما إجمالي الهامش من كل قناة؟\n2) أي قناة أكثر ربحاً للوحدة؟\n3) ما نتيجة الاستغلال الإجمالية؟",
+question:"ما الهامش الإجمالي من قناة الجملة (دج)؟",
+type:"number",answer:90000,unit:"دج",
+hint:"م_جملة = (380−200)×500.",
+explanation:"م_جملة=180×500=90,000. م_سوبر=(450−200)×200=50,000. م_أفراد=(600−200)×100=40,000. الإجمالي=180,000. R=180,000−150,000=30,000 دج. الأفراد الأعلى هامشاً للوحدة (400 دج) لكن الجملة تُنتج أكثر إجمالاً."},
+
+{id:147,level:5,domain:"فيزياء",
+situation:"غاز في أسطوانة:\n• الحالة الابتدائية: P₁=2 bar، T₁=300 K، V₁=10 لتر\n• تُسخَّن الأسطوانة (حجم ثابت) حتى T₂=450 K\n\nقانون الغاز: P/T = ثابت (عند V ثابت)\n\n1) ما الضغط الجديد P₂؟\n2) إذا فُتحت الأسطوانة عند T₂ لتصل P للضغط الجوي (1 bar) وT ثابت، ما الحجم النهائي؟ (P×V=ثابت عند T ثابت)",
+question:"ما الضغط الجديد P₂ (bar)؟",
+type:"number",answer:3,unit:"bar",
+hint:"P₂/T₂ = P₁/T₁ → P₂ = P₁×T₂/T₁.",
+explanation:"P₂=2×450÷300=3 bar. عند الفتح: P₂×V₂=P_جوي×V_نهائي → 3×10=1×V_نهائي → V=30 لتر. الحجم تضاعف 3 مرات! هذا يفسر خطر الأسطوانات المُسخَّنة."},
+
+{id:148,level:5,domain:"كيمياء",
+situation:"اختبار جودة لبن:\nاللبن يحتوي حمض اللاكتيك (M=90 غ/مول) الذي يزداد بالتلف.\nللتحديد: عيّنة 20 مل من اللبن حُيّدت بـ 15 مل من NaOH تركيزه 0.1 mol/L.\nتفاعل: حمض_اللاكتيك + NaOH → ملح + H₂O (نسبة 1:1)\n\nاللبن الطازج: حموضة < 0.18%\nاللبن المتلف: حموضة > 0.18%\n\n1) كم مول NaOH استُهلك؟\n2) كم مول حمض لاكتيك في 20 مل لبن؟\n3) ما تركيز الحمض (غ/100مل)؟ وهل اللبن طازج؟",
+question:"كم مول NaOH استُهلك في التحييد؟",
+type:"number",answer:0.0015,unit:"مول",
+hint:"n(NaOH) = C×V(L) = 0.1×0.015.",
+explanation:"n(NaOH)=0.0015 مول=n(حمض). كتلة الحمض=0.0015×90=0.135 غ في 20 مل. في 100 مل: 0.135×5=0.675 غ → حموضة=0.675% > 0.18% → اللبن متلف! يجب التخلص منه."},
+
+{id:149,level:5,domain:"رياضيات",
+situation:"لعبة حظ بريئة:\nصندوق يحتوي: 3 كرات حمراء، 4 زرقاء، 3 صفراء.\nتسحبين كرتين على التوالي دون إعادة.\n\n1) P(كلتاهما حمراوتان)\n2) P(واحدة حمراء وواحدة زرقاء)\n3) P(لا توجد صفراء)\n4) P(على الأقل واحدة زرقاء)",
+question:"ما P(كلتا الكرتين حمراوتان) كنسبة مئوية؟",
+type:"number",answer:6.67,unit:"%",
+hint:"P = (3/10)×(2/9). الكرة الثانية تُسحب من 9.",
+explanation:"P=(3×2)÷(10×9)=6÷90=1/15≈6.67%. P(حمراء+زرقاء)=(3×4+4×3)÷(10×9)=24÷90≈26.7%. P(لا صفراء)=(7×6)÷(10×9)=42÷90≈46.7%. P(الأقل واحدة زرقاء)=1−P(لا زرقاء)=1−(6×5)÷(10×9)=1−30/90≈66.7%."},
+
+{id:150,level:5,domain:"منطق",
+situation:"نقاش حول تأثير وسائل التواصل الاجتماعي:\n• دراسة 1: 'المراهقون الأكثر استخداماً لوسائل التواصل أكثر اكتئاباً' (عينة 500، ارتباط 0.6)\n• دراسة 2: 'المراهقون المكتئبون يستخدمون وسائل التواصل أكثر' (عينة 300، ارتباط 0.6)\n• دراسة 3: 'التجربة العشوائية: تقليل الاستخدام 30 دقيقة/يوم قلل الاكتئاب 18%' (عينة 200)\n\nأيها يثبت السببية بشكل أقوى؟ ولماذا؟",
+question:"ما نسبة تقليل الاكتئاب في الدراسة التجريبية؟",
+type:"number",answer:18,unit:"%",
+hint:"مذكورة في النص مباشرة.",
+explanation:"18%. الدراسة 3 هي الوحيدة التي تُثبت السببية لأنها تجربة عشوائية مضبوطة (RCT). الدراستان 1 و2 تُثبتان الارتباط فقط، وكلاهما يصف نفس الظاهرة من زاويتين. ارتباط 0.6 ≠ سببية. درس جوهري: العلم يحتاج التجربة المضبوطة لإثبات السببية، لا الارتباط وحده."}
+];
+
+// ══════════════════════════════════════════════
+//  STATE & STORAGE
+// ══════════════════════════════════════════════
+const SKEY = 'mantiqiV3';
+let S = {
+  theme:'light', results:{}, weaknesses:{}, streak:0,
+  currentLevel:null, queue:[], qIdx:0, seenIds:new Set(),
+  previewMode: false
+};
+
+function load(){
+  try{
+    const r=localStorage.getItem(SKEY);
+    if(r){const d=JSON.parse(r);S.results=d.results||{};S.weaknesses=d.weaknesses||{};S.streak=d.streak||0;S.theme=d.theme||'light';}
+  }catch(e){}
+}
+function save(){
+  try{localStorage.setItem(SKEY,JSON.stringify({results:S.results,weaknesses:S.weaknesses,streak:S.streak,theme:S.theme}));}catch(e){}
+}
+
+function cat(ex){
+  return ex.level===1?`${ex.domain}:${ex.answer}`:ex.domain;
+}
+function acc(c){
+  const w=S.weaknesses[c];
+  return(!w||w.a===0)?0.5:w.c/w.a;
+}
+function recordWeakness(ex,correct){
+  const c=cat(ex);
+  if(!S.weaknesses[c])S.weaknesses[c]={a:0,c:0};
+  S.weaknesses[c].a++;
+  if(correct)S.weaknesses[c].c++;
+}
+
+// ══════════════════════════════════════════════
+//  QUEUE (ADAPTIVE)
+// ══════════════════════════════════════════════
+function shuffle(a){
+  const b=[...a];
+  for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}
+  return b;
+}
+
+function buildQueue(lv){
+  const lvExs=DB.filter(e=>e.level===lv);
+  // المستوى 1: ترتيب ثابت لأن التدرج في الصعوبة مقصود
+  const base = lv===1 ? lvExs.map(e=>e.id) : shuffle(lvExs.map(e=>e.id));
+  const extras=[];
+  if(lv!==1){
+    lvExs.forEach(e=>{
+      if(acc(cat(e))<0.6)extras.push(e.id);
+    });
+  }
+  return [...base,...shuffle(extras).slice(0,8)];
+}
+
+function findSimilar(ex){
+  const c=cat(ex);
+  const pool=DB.filter(e=>e.level===S.currentLevel&&!S.seenIds.has(e.id)&&e.id!==ex.id&&cat(e)===c);
+  if(pool.length)return pool[Math.floor(Math.random()*pool.length)];
+  const fallback=DB.filter(e=>e.level===S.currentLevel&&!S.seenIds.has(e.id)&&e.id!==ex.id&&e.domain===ex.domain);
+  return fallback.length?fallback[Math.floor(Math.random()*fallback.length)]:null;
+}
+
+// ══════════════════════════════════════════════
+//  PROGRESS HELPERS
+// ══════════════════════════════════════════════
+function lvExs(l){return DB.filter(e=>e.level===l);}
+function lvDone(l){return lvExs(l).filter(e=>S.results[e.id]!==undefined).length;}
+function lvCorrect(l){return lvExs(l).filter(e=>S.results[e.id]===true).length;}
+function togglePreview(){
+  S.previewMode = !S.previewMode;
+  const btn = document.getElementById('preview-btn');
+  btn.textContent = S.previewMode ? '🔒 إلغاء وضع المعاينة' : '🔓 وضع المعاينة — افتح جميع المستويات';
+  btn.classList.toggle('active', S.previewMode);
+  renderHome();
+}
+
+function isUnlocked(l){return l===1 || S.previewMode || lvDone(l-1)>=20;}
+function totalDone(){return Object.keys(S.results).length;}
+function totalCorrect(){return Object.values(S.results).filter(v=>v===true).length;}
+
+function weakCats(lv){
+  const cs=[...new Set(lvExs(lv).map(e=>cat(e)))];
+  return cs.filter(c=>{const w=S.weaknesses[c];return w&&w.a>=3&&(w.c/w.a)<0.6;}).map(c=>{
+    if(lv===1){const p=c.split(':');const t={0:'طردية',1:'عكسية',2:'تراكمية'};return `${p[0]} (${t[p[1]]||p[1]})`;}
+    return c;
+  });
+}
+
+// ══════════════════════════════════════════════
+//  THEME
+// ══════════════════════════════════════════════
+function toggleTheme(){S.theme=S.theme==='light'?'dark':'light';applyTheme();save();}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',S.theme);
+  document.getElementById('theme-btn').textContent=S.theme==='light'?'🌙 داكن':'☀️ فاتح';
+}
+
+// ══════════════════════════════════════════════
+//  HOME
+// ══════════════════════════════════════════════
+const LCFG=[
+  {e:'🌱',t:'بناء المسار الصحيح',d:'مواقف يومية تبني منطقك — من خطوة واحدة لسلسلة كاملة'},
+  {e:'🔗',t:'بناء المعادلات',d:'5 مجالات: اقتصاد، فيزياء، كيمياء، رياضيات، منطق'},
+  {e:'🧩',t:'علاقات مركبة',d:'علاقات مركّبة وتفكير نقدي في 5 مجالات'},
+  {e:'🔢',t:'الحساب بالأرقام',d:'أرقام حقيقية ومواقف من الحياة اليومية'},
+  {e:'🏆',t:'مسائل شاملة',d:'مسائل شاملة تجمع مجالين أو أكثر في مسألة واحدة'},
+];
+
+function showHome(){
+  document.getElementById('home').classList.remove('hidden');
+  document.getElementById('exercise').classList.add('hidden');
+  document.getElementById('complete').classList.add('hidden');
+  renderHome();
+}
+
+function renderHome(){
+  const done=totalDone(),cor=totalCorrect();
+  document.getElementById('st-done').textContent=done;
+  document.getElementById('st-cor').textContent=cor;
+  document.getElementById('st-pct').textContent=done>0?Math.round(cor/done*100)+'%':'—';
+  document.getElementById('st-str').textContent='🔥'+S.streak;
+
+  const g=document.getElementById('levels-grid');g.innerHTML='';
+  LCFG.forEach((cfg,i)=>{
+    const lv=i+1,unlocked=isUnlocked(lv),done=lvDone(lv),cor=lvCorrect(lv);
+    const pct=Math.round(done/30*100);
+    const wk=weakCats(lv);
+    const card=document.createElement('div');
+    card.className='level-card'+(unlocked?'':' locked');
+    card.onclick=()=>unlocked&&startLevel(lv);
+    card.innerHTML=`
+      <div class="lbadge b${lv}">${cfg.e}</div>
+      <div class="level-title">المستوى ${lv}: ${cfg.t}</div>
+      <div class="level-desc">${cfg.d}</div>
+      ${!unlocked?`<div class="lock-msg">🔒 أكملي ${20-lvDone(lv-1)} تمريناً في المستوى ${lv-1} للفتح</div>`:''}
+      <div class="lbar"><div class="lbar-fill" style="width:${pct}%"></div></div>
+      <div class="lstats"><span>${done}/30 تمرين</span><span>${done>0?Math.round(cor/done*100)+'% صحيح':'—'}</span></div>
+      ${wk.length&&unlocked?`<div class="weak-hint">⚠️ ضعف في: ${wk.slice(0,2).join('، ')}</div>`:''}
+    `;
+    g.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  START LEVEL
+// ══════════════════════════════════════════════
+function startLevel(lv){
+  S.currentLevel=lv;S.queue=buildQueue(lv);S.qIdx=0;S.seenIds=new Set();
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('complete').classList.add('hidden');
+  document.getElementById('exercise').classList.remove('hidden');
+  showEx();
+}
+function retryLv(){if(S.currentLevel)startLevel(S.currentLevel);}
+function backHome(){
+  document.getElementById('exercise').classList.add('hidden');
+  document.getElementById('complete').classList.add('hidden');
+  showHome();
+}
+
+// ══════════════════════════════════════════════
+//  EXERCISE
+// ══════════════════════════════════════════════
+let CUR=null;
+
+function getPhaseLabel(ex){
+  if(ex.level!==1)return '';
+  if(ex.id<=10)return 'المرحلة أ — خطوة واحدة';
+  if(ex.id<=15)return 'المرحلة ب — خطوتان';
+  return 'المرحلة ج — سلسلة كاملة';
+}
+
+function showEx(){
+  if(S.qIdx>=S.queue.length){showComplete();return;}
+  const id=S.queue[S.qIdx];
+  CUR=DB.find(e=>e.id===id);
+  if(!CUR){S.qIdx++;showEx();return;}
+
+  const isAdapt=S.seenIds.has(id);
+  S.seenIds.add(id);
+
+  // Progress
+  const pct=Math.round(S.qIdx/S.queue.length*100);
+  document.getElementById('ex-fill').style.width=pct+'%';
+  document.getElementById('ex-count').textContent=`${S.qIdx+1} من ${S.queue.length}`;
+
+  // Adaptive badge
+  document.getElementById('adapt-wrap').innerHTML=isAdapt?'<div class="adapt-badge">🎯 تمرين تكيّفي لتقوية نقطة ضعف</div>':'';
+
+  // Domain chip
+  const d=document.getElementById('ex-domain');
+  d.textContent = CUR.domain === 'حياة يومية' ? '🌍 حياة يومية' : CUR.domain;
+  d.className=`dchip dc-${CUR.domain==='حياة يومية'?'يومية':CUR.domain}`;
+
+  // Phase badge (level 1 only)
+  const phase=getPhaseLabel(CUR);
+  const phaseEl=document.getElementById('phase-badge');
+  if(phaseEl){phaseEl.textContent=phase;phaseEl.style.display=phase?'inline-block':'none';}
+
+  // Situation (preserve line breaks)
+  const sitEl=document.getElementById('ex-sit');
+  sitEl.textContent='';
+  sitEl.style.whiteSpace='pre-line';
+  sitEl.textContent=CUR.situation;
+
+  document.getElementById('ex-q').textContent=CUR.question;
+
+  // Info card (level 1)
+  const infoWrap=document.getElementById('info-wrap');
+  if(infoWrap){
+    if(CUR.info){
+      infoWrap.innerHTML=`
+        <button class="btn-info" onclick="toggleInfo()">📋 اعرضي المعلومات والقوانين</button>
+        <div class="info-card" id="info-card">${CUR.info}</div>`;
+    } else {
+      infoWrap.innerHTML='';
+    }
+  }
+
+  // Answer area
+  const a=document.getElementById('ex-ans');
+  if(CUR.type==='mcq'){
+    a.innerHTML='<div class="options" id="opts"></div>';
+    const w=document.getElementById('opts');
+    CUR.options.forEach((o,i)=>{
+      const b=document.createElement('button');
+      b.className='opt';b.textContent=o;
+      b.onclick=()=>doMCQ(i,b);
+      w.appendChild(b);
+    });
+  } else {
+    a.innerHTML=`
+      <div class="num-wrap">
+        <div class="num-row">
+          <input type="number" class="num-input" id="ni" placeholder="أدخل الإجابة هنا" step="any">
+          ${CUR.unit?`<span class="unit">${CUR.unit}</span>`:''}
+        </div>
+        <button class="btn-check" id="bchk" onclick="doNum()">تحقق ✓</button>
+        <div class="hint-area">
+          <button class="btn-hint" onclick="toggleHint()">💡 أحتاج تلميحاً</button>
+          <div class="hint-text" id="ht">${CUR.hint||''}</div>
+        </div>
+      </div>`;
+    const ni=document.getElementById('ni');
+    ni.addEventListener('keydown',e=>{if(e.key==='Enter')doNum();});
+  }
+
+  // Reset feedback
+  const fb=document.getElementById('ex-fb');
+  fb.className='feedback';fb.style.display='none';
+  // Show skip button
+  const skip=document.getElementById('btn-skip');
+  if(skip) skip.style.display='inline-block';
+}
+
+function toggleInfo(){
+  const c=document.getElementById('info-card');
+  if(c){c.classList.toggle('show');
+    const btn=c.previousElementSibling;
+    btn.textContent=c.classList.contains('show')?'📋 إخفاء المعلومات':'📋 اعرضي المعلومات والقوانين';
+  }
+}
+
+function toggleHint(){
+  const h=document.getElementById('ht');
+  if(h)h.classList.toggle('show');
+}
+
+function doMCQ(chosen,btn){
+  const ok=chosen===CUR.answer;
+  document.querySelectorAll('.opt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===CUR.answer)b.classList.add('correct');
+    else if(b===btn&&!ok)b.classList.add('wrong');
+  });
+  handleResult(ok);
+}
+
+function doNum(){
+  const ni=document.getElementById('ni');
+  const val=parseFloat(ni.value);
+  if(isNaN(val))return;
+  const tol=Math.max(0.001,Math.abs(CUR.answer)*0.01);
+  const ok=Math.abs(val-CUR.answer)<=tol;
+  ni.disabled=true;ni.classList.add(ok?'correct':'wrong');
+  document.getElementById('bchk').disabled=true;
+  if(!ok){const h=document.getElementById('ht');if(h)h.classList.add('show');}
+  handleResult(ok);
+}
+
+function handleResult(ok){
+  // Update results
+  if(ok){S.results[CUR.id]=true;}
+  else if(S.results[CUR.id]===undefined){S.results[CUR.id]=false;}
+
+  recordWeakness(CUR,ok);
+  S.streak=ok?S.streak+1:0;
+
+  if(!ok){
+    const sim=findSimilar(CUR);
+    if(sim&&!S.seenIds.has(sim.id)){
+      const ins=Math.min(S.qIdx+4,S.queue.length);
+      S.queue.splice(ins,0,sim.id);
+    }
+  }
+  save();
+
+  // Hide skip button when answered
+  const skip = document.getElementById('btn-skip');
+  if(skip) skip.style.display = 'none';
+
+  // Feedback
+  const fb=document.getElementById('ex-fb');
+  fb.style.display='block';
+  fb.className=`feedback show ${ok?'ok':'err'}`;
+  document.getElementById('fb-h').textContent=ok?'✅ إجابة صحيحة!':`❌ الإجابة الصحيحة: ${CUR.answer} ${CUR.unit||''}`;
+  document.getElementById('fb-e').textContent=CUR.explanation;
+}
+
+function skipEx(){
+  // Hide skip button after feedback shown
+  const skip = document.getElementById('btn-skip');
+  if(skip) skip.style.display = 'none';
+  // Move to next without recording result
+  S.qIdx++;
+  if(S.qIdx >= S.queue.length){ showComplete(); return; }
+  showEx();
+}
+
+function nextEx(){
+  S.qIdx++;
+  if(S.qIdx>=S.queue.length){showComplete();return;}
+  showEx();
+}
+
+// ══════════════════════════════════════════════
+//  COMPLETE
+// ══════════════════════════════════════════════
+function showComplete(){
+  document.getElementById('exercise').classList.add('hidden');
+  document.getElementById('complete').classList.remove('hidden');
+
+  const done=lvDone(S.currentLevel),cor=lvCorrect(S.currentLevel);
+  const pct=done>0?Math.round(cor/done*100):0;
+
+  let icon='🎉',title='استمري في التدريب!';
+  if(pct>=90){icon='🏆';title='ممتاز جداً!';}
+  else if(pct>=70){icon='🌟';title='أحسنتِ!';}
+  else if(pct>=50){icon='💪';title='جيد، استمري!';}
+
+  document.getElementById('c-icon').textContent=icon;
+  document.getElementById('c-title').textContent=`المستوى ${S.currentLevel} — ${title}`;
+  document.getElementById('c-sub').textContent=`أكملتِ ${done} من 30 تمريناً أصلياً`;
+  document.getElementById('c-stars').textContent=pct>=90?'⭐⭐⭐':pct>=70?'⭐⭐':'⭐';
+  document.getElementById('c-score').textContent=`${cor}/${done} صحيح (${pct}%)`;
+
+  const wk=weakCats(S.currentLevel);
+  const wd=document.getElementById('c-weak');
+  if(wk.length>0){
+    wd.innerHTML=`<h3>نقاط تحتاج تقوية:</h3>${wk.map(c=>`<div class="weak-item">• ${c}</div>`).join('')}<div style="margin-top:8px;font-size:.78rem;color:var(--ts)">✨ التطبيق سيُركّز على هذه المجالات تلقائياً في جلستك القادمة.</div>`;
+  } else {
+    wd.innerHTML=pct>=70?`<div style="color:var(--ok);font-weight:700;text-align:center">✅ أداء ممتاز في جميع المجالات!</div>`:'';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+load();applyTheme();showHome();
+</script>
+</body>
+</html>
